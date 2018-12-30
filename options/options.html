@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+
+<!--
+	Smart Previewer - The smart previewer which previews everything.
+	Copyright (c) 2018 Soushi Atsumi. All rights reserved.
+
+	This Source Code Form is subject to the terms of the Mozilla Public
+	License, v. 2.0. If a copy of the MPL was not distributed with this
+	file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+	This Source Code Form is "Incompatible With Secondary Licenses", as
+	defined by the Mozilla Public License, v. 2.0.
+ -->
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta charset="utf-8" />
+	<link rel="stylesheet" type="text/css" href="options.css" />
+	<title></title>
+</head>
+<body>
+	<form name="options">
+		<fieldset>
+			<legend id="audioLegend"></legend>
+			<input type="range" id="audioAspectRatioInput" max="0.9" min="0.1" name="audio" step="0.1" value="0.5"><label id="audioAspectRatioLabel"></label><br />
+			<input type="checkbox" checked id="audioAutoplayInput" name="audio"><label id="audioAutoplayLabel"></label><br />
+			<input type="checkbox" id="audioLoopInput" name="audio"><label id="audioLoopLabel"></label><br />
+			<input type="range" id="audioVolumeInput" max="1" min="0" name="audio" step="0.01" value="0.25"><label id="audioVolumeLabel"></label><br />
+		</fieldset><br />
+		<fieldset>
+			<legend id="imageLegend"></legend>
+			<input type="range" id="imageAspectRatioInput" max="0.9" min="0.1" name="image" step="0.1" value="0.5"><label id="imageAspectRatioLabel"></label><br />
+			<input type="range" id="imageBorderWidthInput" max="16" min="0" name="image" step="1" value="8"><label id="imageBorderWidthLabel"></label><br />
+		</fieldset><br />
+		<fieldset>
+			<legend id="pdfLegend"></legend>
+			<input type="range" id="pdfAspectRatioInput" max="0.9" min="0.1" name="pdf" step="0.1" value="0.5"><label id="pdfAspectRatioLabel"></label><br />
+			<input type="range" id="pdfBorderWidthInput" max="16" min="0" name="pdf" step="1" value="8"><label id="pdfBorderWidthLabel"></label><br />
+		</fieldset><br />
+		<fieldset>
+			<legend id="videoLegend"></legend>
+			<input type="range" id="videoAspectRatioInput" name="video" max="0.9" min="0.1" step="0.1" value="0.5"><label id="videoAspectRatioLabel"></label><br />
+			<input type="checkbox" checked id="videoAutoplayInput" name="video"><label id="videoAutoplayLabel"></label><br />
+			<input type="checkbox" id="videoLoopInput" name="video"><label id="videoLoopLabel"></label><br />
+			<input type="range" id="videoVolumeInput" max="1" min="0" name="video" step="0.01" value="0.25"><label id="videoVolumeLabel"></label><br />
+		</fieldset><br />
+		<button id="initializeOptionsButton" type="reset"></button>
+	</form><br />
+	<div id="informationDivision"></div><br />
+	<script src="options.js" type="module"></script>
+</body>
+</html>

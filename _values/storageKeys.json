@@ -1,0 +1,25 @@
+﻿{
+	"audio": {
+		"aspectRatio": "audioAspectRatio",
+		"autoplay": "audioAutoplay",
+		"loop": "audioLoop",
+		"volume": "audioVolume"
+	},
+
+	"image": {
+		"aspectRatio": "imageAspectRatio",
+		"borderWidth": "imageBorderwidth"
+	},
+
+	"pdf": {
+		"aspectRatio": "pdfAspectRatio",
+		"borderWidth": "pdfBorderwidth"
+	},
+
+	"video": {
+		"aspectRatio": "videoAspectRatio",
+		"autoplay": "videoAutoplay",
+		"loop": "videoLoop",
+		"volume": "videoVolume"
+	}
+}
