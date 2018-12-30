@@ -5,7 +5,7 @@
 この拡張機能はMicrosoft Edgeでも使えます。
 
 # インストール
-このページ行って [サイドバーで検索](https://addons.mozilla.org/ja/firefox/addon/smart-previewer/) Firefoxでこの拡張機能をインストールして下さい。
+このページ行って [Smart Previewer](https://addons.mozilla.org/ja/firefox/addon/smart-previewer/) Firefoxでこの拡張機能をインストールして下さい。
 
 # 使い方
 拡張機能のインストール後、 ツールバーにあるアプリアイコンをクリックすることで使い方を確認することが出来ます。
