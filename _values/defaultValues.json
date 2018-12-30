@@ -1,0 +1,25 @@
+﻿{
+	"audio": {
+		"aspectRatio": 0.5,
+		"autoplay": true,
+		"loop": false,
+		"volume": 0.25
+	},
+
+	"image": {
+		"aspectRatio": 0.5,
+		"borderWidth": 8
+	},
+
+	"pdf": {
+		"aspectRatio": 0.5,
+		"borderWidth": 8
+	},
+
+	"video": {
+		"aspectRatio": 0.5,
+		"autoplay": true,
+		"loop": false,
+		"volume": 0.25
+	}
+}

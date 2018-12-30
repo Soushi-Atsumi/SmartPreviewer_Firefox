@@ -1,0 +1,183 @@
+﻿{
+	"aspectRatio": {
+		"message": "縦横比"
+	},
+
+	"audio": {
+		"message": "音声"
+	},
+
+	"autoPlay": {
+		"message": "自動再生"
+	},
+
+	"borderWidth": {
+		"message": "境界線幅"
+	},
+
+	"common": {
+		"message": "共通"
+	},
+
+	"contentPermissionReason": {
+		"message": "・何故この拡張機能は「全ウェブサイトのユーザーデータへのアクセス」を要求するのか？"
+	},
+
+	"contentPermissionReasonDescription": {
+		"message": "　この拡張機能はブラウザによって表示されるウェブサイトを上書きすることで機能しています。そのため、ウェブサイトの内容を拡張機能が読み込む必要があるのです。拡張機能によって読み込まれた内容は外部に送信されることはありません。あらゆる心配を払拭するために、この拡張機能のソースコードは以下の場所で公開されており、実際にどのような処理を行っているのかを確認することができます。"
+	},
+
+	"extensionDescription": {
+		"message": "この拡張機能はリンクの内容を即座に表示します。",
+		"description": "拡張機能説明。"
+	},
+
+	"extensionName": {
+		"message": "Smart Previewer",
+		"description": "拡張機能名。"
+	},
+
+	"iconImageAlt": {
+		"message": "拡張機能のアイコン。",
+		"description": "この拡張機能の代替説明。"
+	},
+
+	"image": {
+		"message": "画像"
+	},
+
+	"indexHTMLCaution1": {
+		"message": "注意: 動的に生成されるページでは動作しません。",
+		"description": "この拡張機能の注意1。"
+	},
+
+	"indexHTMLCaution2": {
+		"message": "注意: httpsのサイトにいる場合はhttp経由の内容の読み込みは失敗します。",
+		"description": "この拡張機能の注意2。"
+	},
+
+	"indexHTMLTitle": {
+		"message": "使い方",
+		"description": "index.htmlの題名。"
+	},
+
+	"initializeOptions": {
+		"message": "設定を初期化する"
+	},
+
+	"loop": {
+		"message": "繰り返し"
+	},
+
+	"openOptions": {
+		"message": "設定を開く"
+	},
+
+	"openUsage": {
+		"message": "使い方を開く"
+	},
+
+	"optionsHTMLInformation": {
+		"message": "変更後の設定を適用するにはページを更新する必要があります。"
+	},
+
+	"optionsHTMLTitle": {
+		"message": "設定",
+		"description": "options.htmlの題名。"
+	},
+
+	"popupHTMLTitle": {
+		"message": "Smart Previewer",
+		"description": "popup.htmlの題名。"
+	},
+
+	"pdf": {
+		"message": "PDF"
+	},
+
+	"tutorialCommon1": {
+		"message": "リンクに矢印を乗せるとリンク先の内容が表示されます。"
+	},
+
+	"tutorialCommon2": {
+		"message": "表示中に上にスクロールすると拡大、下にスクロールすると縮小します。"
+	},
+
+	"tutorialCommon3": {
+		"message": "シフトキーを押している間はこの拡張機能は無効化されます."
+	},
+
+	"tutorialAudio1": {
+		"message": "「aac」、「flac」、「m4a」、「mp3」、「ogg」及び「wav」形式のリンクに矢印を乗せると音声が自動的に再生されます。"
+	},
+
+	"tutorialAudio2": {
+		"message": "音声を保存したい場合は、音声の再生中に右クリックで保存を選択できます。"
+	},
+
+	"tutorialImage1": {
+		"message": "「gif」、「gifv」、「ico」、「jpeg」、「jpg」、「png」及び「svg」形式のリンクに矢印を乗せると画像が自動的に表示されます。"
+	},
+
+	"tutorialImage2": {
+		"message": "画像の読み込み中は枠が点滅します。読み込みが完了した場合は点滅が終了し、読み込みに失敗した場合は枠が赤くなります。"
+	},
+
+	"tutorialImage3": {
+		"message": "画像を保存したい場合は、画像の表示中に右クリックで保存を選択できます。"
+	},
+
+	"tutorialImage4": {
+		"message": "画像のみを表示したい場合は、Ctrlキーを押しながら表示中の画像を押します。"
+	},
+
+	"tutorialImage5": {
+		"message": "画像を閉じたい場合は、表示中の画像を押します。"
+	},
+
+	"tutorialPDF1": {
+		"message": "「pdf」形式のリンクに矢印を乗せると文書が自動的に表示されます。"
+	},
+
+	"tutorialPDF2": {
+		"message": "文書の読み込み中は枠が点滅します。読み込みが完了した場合は点滅が終了し、読み込みに失敗した場合は枠が赤くなります。"
+	},
+
+	"tutorialPDF3": {
+		"message": "文書を保存したい場合は、文書の表示中に右クリックで保存を選択できます。"
+	},
+
+	"tutorialPDF4": {
+		"message": "pdfのみを表示したい場合は、表示中の枠を押します。これはpdfの読み込みに失敗した場合でも有効です。"
+	},
+
+	"tutorialTitle": {
+		"message": "Smart Previewer - 使い方",
+		"description": "使い方の題名。"
+	},
+
+	"tutorialVideo1": {
+		"message": "「mov」、「mp4」、「webm」及び「wmv」形式のリンクに矢印を乗せると動画が自動的に再生されます。"
+	},
+
+	"tutorialVideo2": {
+		"message": "動画を保存したい場合は、動画の再生中に右クリックで保存を選択できます。"
+	},
+
+	"tutorialVideoHyperlink": {
+		"message": "https://drive.google.com/file/d/1oSNhEX7X2GNN0fHTRPlyKdk_dGr3ZJq-/view",
+		"description": "使い方の動画のURL。"
+	},
+
+	"video": {
+		"message": "動画"
+	},
+
+	"volume": {
+		"message": "音量"
+	},
+
+	"watchTheVideo": {
+		"message": "動画を観る"
+	}
+}

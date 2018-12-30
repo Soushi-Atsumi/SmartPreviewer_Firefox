@@ -1,0 +1,183 @@
+﻿{
+	"aspectRatio": {
+		"message": "Aspect Ratio"
+	},
+
+	"audio": {
+		"message": "Audio"
+	},
+
+	"autoPlay": {
+		"message": "Auto Play"
+	},
+
+	"borderWidth": {
+		"message": "Border Width"
+	},
+
+	"common": {
+		"message": "Common"
+	},
+
+	"contentPermissionReason": {
+		"message": "・Why does this extension require \"Access your data for all websites\"?"
+	},
+
+	"contentPermissionReasonDescription": {
+		"message": "　This extension is working to override websites displayed by the browser shows. Because of that, the extension need to read the content of websites. The content read by the extension will never send outside. To eliminate any worries, the source codes are open to the public at the following link, and you can check that it actually does."
+	},
+
+	"extensionDescription": {
+		"message": "This extension checks a content of a link instantly.",
+		"description": "Description of the extension."
+	},
+
+	"extensionName": {
+		"message": "Smart Previewer",
+		"description": "Name of the extension."
+	},
+
+	"iconImageAlt": {
+		"message": "The icon of this extension.",
+		"description": "The alternate description of the icon of this extension."
+	},
+
+	"image": {
+		"message": "Image"
+	},
+
+	"indexHTMLCaution1": {
+		"message": "Caution: It does not work on a page which is generated dynamically.",
+		"description": "Cautions1 of this extension."
+	},
+
+	"indexHTMLCaution2": {
+		"message": "Caution: It does not work when this extension loads contents via http if you are on a https site.",
+		"description": "Cautions2 of this extension."
+	},
+
+	"indexHTMLTitle": {
+		"message": "Tutorial",
+		"description": "The title of index.html."
+	},
+
+	"initializeOptions": {
+		"message": "Initialize options"
+	},
+
+	"loop": {
+		"message": "Loop"
+	},
+
+	"openOptions": {
+		"message": "Open options"
+	},
+
+	"openUsage": {
+		"message": "Open usage"
+	},
+
+	"optionsHTMLInformation": {
+		"message": "You need to reload a page to apply changes of options."
+	},
+
+	"optionsHTMLTitle": {
+		"message": "Options",
+		"description": "The title of options.html."
+	},
+
+	"popupHTMLTitle": {
+		"message": "Smart Previewer",
+		"description": "The title of popup.html"
+	},
+
+	"pdf": {
+		"message": "PDF"
+	},
+
+	"tutorialCommon1": {
+		"message": "A content is displayed when you put a cursor on a link."
+	},
+
+	"tutorialCommon2": {
+		"message": "It is zoomed in when you roll up the mouse wheel, and it is zoomed out when you roll down the mouse wheel."
+	},
+	
+	"tutorialCommon3": {
+		"message": "This extension is disabled while pressing the shift key."
+	},
+
+	"tutorialAudio1": {
+		"message": "An audio is displayed when you put a cursor on a link of 'aac', 'flac', 'm4a', 'mp3', 'ogg' and 'wav'."
+	},
+
+	"tutorialAudio2": {
+		"message": "If you want to save an audio, you can save it by right click while playing."
+	},
+
+	"tutorialImage1": {
+		"message": "An image is displayed when you put a cursor on a link of 'gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png' and 'svg'."
+	},
+
+	"tutorialImage2": {
+		"message": "A border is blinking while loading the image. The blinking ends when the loading is done, and the border becomes red when the loading failed."
+	},
+
+	"tutorialImage3": {
+		"message": "If you want to save an image, you can save it by right click while displaying."
+	},
+
+	"tutorialImage4": {
+		"message": "Click the image while holding down a Ctrl key when you want to view only the image."
+	},
+
+	"tutorialImage5": {
+		"message": "Click the image when you want to close the image."
+	},
+
+	"tutorialPDF1": {
+		"message": "A document is displayed when you put a cursor on a link of 'pdf'."
+	},
+
+	"tutorialPDF2": {
+		"message": "A border is blinking while loading the document. The blinking ends when the loading is done, and the border becomes red when the loading failed."
+	},
+
+	"tutorialPDF3": {
+		"message": "If you want to save a document, you can save it by right click while displaying."
+	},
+
+	"tutorialPDF4": {
+		"message": "Click the border when you want to view only the pdf. This is available even if it failed to load the pdf."
+	},
+
+	"tutorialTitle": {
+		"message": "Smart Previewer - Tutorial",
+		"description": "The title of the tutorial."
+	},
+
+	"tutorialVideo1": {
+		"message": "A video is played when you put a cursor on a link of 'mov', 'mp4', 'webm' and 'wmv'."
+	},
+
+	"tutorialVideo2": {
+		"message": "If you want to save a video, you can save it by right click while playing."
+	},
+
+	"video": {
+		"message": "Video"
+	},
+
+	"tutorialVideoHyperlink": {
+		"message": "https://drive.google.com/file/d/1vpNEF-2PHObYkuplyWL9FdKn18GCvKig/view",
+		"description": "The url of tutorial video."
+	},
+
+	"volume": {
+		"message": "Volume"
+	},
+
+	"watchTheVideo": {
+		"message": "Watch the Video"
+	}
+}

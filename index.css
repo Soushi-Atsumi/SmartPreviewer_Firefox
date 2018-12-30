@@ -1,0 +1,45 @@
+﻿/*
+ * Smart Previewer - The smart previewer which previews everything.
+ * Copyright (c) 2018 Soushi Atsumi. All rights reserved.
+ *
+ * This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/.
+ * 
+ * This Source Code Form is "Incompatible With Secondary Licenses", as
+ * defined by the Mozilla Public License, v. 2.0.
+ */
+
+body {
+	padding-left: 16px;
+	padding-right: 16px;
+}
+
+#tutorialTitleDivision {
+    font-size: 64px;
+    text-align: center;
+}
+
+#tutorialVideoDescriptionLabel {
+    color: blue;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+.cautionDivision {
+	background-color: black;
+	color: yellow;
+	margin-top: 8px;
+	margin-bottom: 8px;
+}
+
+#contentPermissionDivision {
+	background-color: lightskyblue;
+	margin-top: 16px;
+	margin-bottom: 8px;
+}
+
+footer {
+	margin-top: 16px;
+	text-align: center;
+}
