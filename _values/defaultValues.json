@@ -2,23 +2,27 @@
 	"audio": {
 		"aspectRatio": 0.5,
 		"autoplay": true,
+		"enabled": true,
 		"loop": false,
 		"volume": 0.25
 	},
 
 	"image": {
 		"aspectRatio": 0.5,
-		"borderWidth": 8
+		"borderWidth": 8,
+		"enabled": true
 	},
 
 	"pdf": {
 		"aspectRatio": 0.5,
-		"borderWidth": 8
+		"borderWidth": 8,
+		"enabled": true
 	},
 
 	"video": {
 		"aspectRatio": 0.5,
 		"autoplay": true,
+		"enabled": true,
 		"loop": false,
 		"volume": 0.25
 	}

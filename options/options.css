@@ -30,3 +30,9 @@ label {
 	margin-top: 16px;
 	white-space: nowrap;
 }
+
+.inputValueLabel {
+	margin-left: 8px;
+	margin-right: 16px;
+	width: 16px;
+}

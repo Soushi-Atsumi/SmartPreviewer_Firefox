@@ -2,23 +2,27 @@
 	"audio": {
 		"aspectRatio": "audioAspectRatio",
 		"autoplay": "audioAutoplay",
+		"enabled": "audioEnabled",
 		"loop": "audioLoop",
 		"volume": "audioVolume"
 	},
 
 	"image": {
 		"aspectRatio": "imageAspectRatio",
-		"borderWidth": "imageBorderwidth"
+		"borderWidth": "imageBorderwidth",
+		"enabled": "imageEnabled"
 	},
 
 	"pdf": {
 		"aspectRatio": "pdfAspectRatio",
-		"borderWidth": "pdfBorderwidth"
+		"borderWidth": "pdfBorderwidth",
+		"enabled": "pdfEnabled"
 	},
 
 	"video": {
 		"aspectRatio": "videoAspectRatio",
 		"autoplay": "videoAutoplay",
+		"enabled": "videoEnabled",
 		"loop": "videoLoop",
 		"volume": "videoVolume"
 	}
