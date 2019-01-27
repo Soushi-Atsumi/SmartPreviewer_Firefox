@@ -27,6 +27,10 @@
 		"message": "　This extension is working to override websites displayed by the browser shows. Because of that, the extension need to read the content of websites. The content read by the extension will never send outside. To eliminate any worries, the source codes are open to the public at the following link, and you can check that it actually does."
 	},
 
+	"enabled": {
+		"message": "Enabled"
+	},
+
 	"extensionDescription": {
 		"message": "This extension checks a content of a link instantly.",
 		"description": "Description of the extension."
@@ -102,7 +106,7 @@
 	"tutorialCommon2": {
 		"message": "It is zoomed in when you roll up the mouse wheel, and it is zoomed out when you roll down the mouse wheel."
 	},
-	
+
 	"tutorialCommon3": {
 		"message": "This extension is disabled while pressing the shift key."
 	},
@@ -164,13 +168,13 @@
 		"message": "If you want to save a video, you can save it by right click while playing."
 	},
 
-	"video": {
-		"message": "Video"
-	},
-
 	"tutorialVideoHyperlink": {
 		"message": "https://drive.google.com/file/d/1vpNEF-2PHObYkuplyWL9FdKn18GCvKig/view",
 		"description": "The url of tutorial video."
+	},
+
+	"video": {
+		"message": "Video"
 	},
 
 	"volume": {

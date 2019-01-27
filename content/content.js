@@ -20,23 +20,27 @@ const contentState = { loading: 0, loaded: 1, error: 2 };
 //Audio
 var floatingAudio = document.createElement('audio');
 var floatingAudioAspectRatio;
+var floatingAudioIsEnabled;
 const floatingAudioDefaultHeight = 40;
 
 //Image
 var floatingImage = document.createElement('img');
 var floatingImageAspectRatio;
 var floatingImageIntervalID = 0;
+var floatingImageIsEnabled;
 var floatingImageStyleBorderWidth;
 
 //PDF
 var floatingPDF = document.createElement('iframe');
 var floatingPDFAspectRatio;
 var floatingPDFIntervalID = 0;
+var floatingPDFIsEnabled;
 var floatingPDFStyleBorderWidth;
 
 //Video
 var floatingVideo = document.createElement('video');
 var floatingVideoAspectRatio;
+var floatingVideoIsEnabled;
 
 main();
 
@@ -60,12 +64,12 @@ function initializeAudio() {
 	floatingAudio.controls = true;
 	floatingAudio.id = 'floatingAudio';
 	floatingAudio.loop = defaultValues.audio.loop;
-	floatingAudio.setAttribute('src', '');
 	floatingAudio.style.display = 'none';
 	floatingAudio.style.height = `${floatingAudioDefaultHeight}px`;
 	floatingAudio.style.position = 'fixed';
 	floatingAudio.style.zIndex = 2147483647;
 	floatingAudio.volume = defaultValues.audio.volume;
+	floatingAudioIsEnabled = defaultValues.audio.enabled;
 	document.body.appendChild(floatingAudio);
 
 	floatingAudio.addEventListener('loadedmetadata', () => {
@@ -76,7 +80,7 @@ function initializeAudio() {
 	floatingAudio.addEventListener('mouseout', (event) => {
 		if (floatingAudio.offsetHeight + floatingAudio.offsetTop <= event.clientY | floatingAudio.offsetLeft >= event.clientX | floatingAudio.offsetLeft + floatingAudio.offsetWidth <= event.clientX | floatingAudio.offsetTop >= event.clientY) {
 			floatingAudio.style.display = "none";
-			floatingAudio.setAttribute('src', '');
+			floatingAudio.removeAttribute('src');
 			floatingAudio.pause();
 		}
 	});
@@ -105,13 +109,13 @@ function initializeImage() {
 	floatingImageStyleBorderWidth = defaultValues.image.borderWidth;
 	floatingImage.id = 'floatingImage';
 	floatingImage.height = floatingImageDefaultHeight;
-	floatingImage.setAttribute('src', '');
 	floatingImage.style.borderStyle = `solid`;
 	floatingImage.style.borderWidth = `${floatingImageStyleBorderWidth}px`;
 	floatingImage.style.display = 'none';
 	floatingImage.style.position = 'fixed';
 	floatingImage.style.zIndex = 2147483647;
 	floatingImage.width = floatingImageDefaultWidth;
+	floatingImageIsEnabled = defaultValues.image.enabled;
 
 	document.body.appendChild(floatingImage);
 
@@ -139,7 +143,7 @@ function initializeImage() {
 
 	floatingImage.addEventListener('mouseout', (event) => {
 		if (floatingImage.offsetHeight + floatingImage.offsetTop <= event.clientY | floatingImage.offsetLeft >= event.clientX | floatingImage.offsetLeft + floatingImage.offsetWidth <= event.clientX | floatingImage.offsetTop >= event.clientY) {
-			floatingImage.setAttribute('src', '');
+			floatingImage.removeAttribute('src');
 			floatingImage.style.display = "none";
 			floatingImage.height = floatingImageDefaultHeight;
 			floatingImage.width = floatingImageDefaultWidth;
@@ -174,7 +178,6 @@ function initializePDF() {
 	floatingPDFStyleBorderWidth = defaultValues.pdf.borderWidth;
 	floatingPDF.id = 'floatingPDF';
 	floatingPDF.height = floatingPDFDefaultHeight;
-	floatingPDF.setAttribute('src', '');
 	floatingPDF.style.background = 'rgba(0, 0, 0, 0)';
 	floatingPDF.style.borderStyle = `solid`;
 	floatingPDF.style.borderWidth = `${floatingPDFStyleBorderWidth}px`;
@@ -182,6 +185,7 @@ function initializePDF() {
 	floatingPDF.style.position = 'fixed';
 	floatingPDF.style.zIndex = 2147483647;
 	floatingPDF.width = floatingPDFDefaultWidth;
+	floatingPDFIsEnabled = defaultValues.pdf.enabled;
 
 	document.body.appendChild(floatingPDF);
 
@@ -206,7 +210,7 @@ function initializePDF() {
 	floatingPDF.addEventListener('mouseout', (event) => {
 		if (floatingPDF.offsetHeight + floatingPDF.offsetTop <= event.clientY | floatingPDF.offsetLeft >= event.clientX | floatingPDF.offsetLeft + floatingPDF.offsetWidth <= event.clientX | floatingPDF.offsetTop >= event.clientY) {
 			floatingPDF.height = floatingPDFDefaultHeight;
-			floatingPDF.setAttribute('src', '');
+			floatingPDF.removeAttribute('src');
 			floatingPDF.style.display = "none";
 			floatingPDF.width = floatingPDFDefaultWidth;
 			toggleFloatingPDFBorderColor(contentState.loaded);
@@ -223,12 +227,12 @@ function initializeVideo() {
 	floatingVideo.height = floatingVideoDefaultHeight;
 	floatingVideo.id = 'floatingVideo';
 	floatingVideo.loop = defaultValues.video.loop;
-	floatingVideo.setAttribute('src', '');
 	floatingVideo.style.display = 'none';
 	floatingVideo.style.position = 'fixed';
 	floatingVideo.style.zIndex = 2147483647;
 	floatingVideo.volume = defaultValues.video.volume;
 	floatingVideo.width = floatingVideoDefaultWidth;
+	floatingVideoIsEnabled = defaultValues.video.enabled;
 
 	document.body.appendChild(floatingVideo);
 
@@ -244,7 +248,7 @@ function initializeVideo() {
 			floatingVideo.height = floatingVideoDefaultHeight;
 			floatingVideo.width = floatingVideoDefaultWidth;
 			floatingVideo.pause();
-			floatingVideo.setAttribute('src', '');
+			floatingVideo.removeAttribute('src');
 			floatingVideo.style.display = "none";
 		}
 	});
@@ -256,7 +260,7 @@ function initializeVideo() {
 			floatingVideo.height = floatingVideoDefaultHeight;
 			floatingVideo.width = floatingVideoDefaultWidth;
 			floatingVideo.pause();
-			floatingVideo.setAttribute('src', '');
+			floatingVideo.removeAttribute('src');
 			floatingVideo.style.display = "none";
 		}
 	});
@@ -288,7 +292,7 @@ function addPreviewers() {
 	const regexAudioRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${audioExtensions.join('|')})`, 'i');
 
 	//Image
-	const imageExtensions = ['gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png', 'tiff', 'svg'];
+	const imageExtensions = ['gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png', 'svg'];
 	const regexImage = new RegExp(`https?:\\/\\/.*\\/.*\\.(${imageExtensions.join('|')})`, 'i');
 	const regexImageRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${imageExtensions.join('|')})`, 'i');
 
@@ -298,14 +302,14 @@ function addPreviewers() {
 	const regexPDFRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${pdfExtensions.join('|')})`, 'i');
 
 	//Video
-	const videoExtensions = ['mkv', 'mov', 'mp4', 'webm', 'wmv'];
+	const videoExtensions = ['mov', 'mp4', 'webm', 'wmv'];
 	const regexVideo = new RegExp(`https?:\\/\\/.*\\/.*\\.(${videoExtensions.join('|')})`, 'i');
 	const regexVideoRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${videoExtensions.join('|')})`, 'i');
 
 	let hyperlinks = document.getElementsByTagName('a');
 
 	for (let i = 0; i < hyperlinks.length; i++) {
-		if (regexAudio.test(hyperlinks[i].href)) {
+		if (floatingAudioIsEnabled && regexAudio.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
 					let targetHref = event.target.href;
@@ -313,7 +317,7 @@ function addPreviewers() {
 					latestMousePositionY = event.clientY;
 
 					if (targetHref.match(regexAudio) === null) {
-						floatingAudio.setAttribute('src', '');
+						floatingAudio.removeAttribute('src');
 					} else if (targetHref.match(regexAudioRepeating) === null) {
 						floatingAudio.setAttribute('src', targetHref.match(regexAudio)[0]);
 					} else {
@@ -334,7 +338,7 @@ function addPreviewers() {
 					}
 				}
 			});
-		} else if (regexImage.test(hyperlinks[i].href)) {
+		} else if (floatingImageIsEnabled && regexImage.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
 					let targetHref = event.target.href;
@@ -342,7 +346,7 @@ function addPreviewers() {
 					latestMousePositionY = event.clientY;
 
 					if (targetHref.match(regexImage) === null) {
-						floatingImage.setAttribute('src', '');
+						floatingImage.removeAttribute('src');
 					} else if (targetHref.match(regexImageRepeating) === null) {
 						floatingImage.setAttribute('src', targetHref.match(regexImage)[0]);
 					} else {
@@ -363,7 +367,7 @@ function addPreviewers() {
 					}
 				}
 			});
-		} else if (regexPDF.test(hyperlinks[i].href)) {
+		} else if (floatingPDFIsEnabled && regexPDF.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
 					let targetHref = event.target.href;
@@ -371,7 +375,7 @@ function addPreviewers() {
 					latestMousePositionY = event.clientY;
 
 					if (targetHref.match(regexPDF) === null) {
-						floatingPDF.setAttribute('src', '');
+						floatingPDF.removeAttribute('src');
 					} else if (targetHref.match(regexPDFRepeating) === null) {
 						floatingPDF.setAttribute('src', targetHref.match(regexPDF)[0]);
 					} else {
@@ -392,7 +396,7 @@ function addPreviewers() {
 					}
 				}
 			});
-		} else if (regexVideo.test(hyperlinks[i].href)) {
+		} else if (floatingVideoIsEnabled && regexVideo.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
 					let targetHref = event.target.href;
@@ -400,7 +404,7 @@ function addPreviewers() {
 					latestMousePositionY = event.clientY;
 
 					if (targetHref.match(regexVideo) === null) {
-						floatingVideo.setAttribute('src', '');
+						floatingVideo.removeAttribute('src');
 					} else if (targetHref.match(regexVideoRepeating) === null) {
 						floatingVideo.setAttribute('src', targetHref.match(regexVideo)[0]);
 					} else {
@@ -588,6 +592,9 @@ function overrideOptions() {
 						case storageKeys.audio.autoplay:
 							floatingAudio.autoplay = options[keys[i]];
 							break;
+						case storageKeys.audio.enabled:
+							floatingAudioIsEnabled = options[keys[i]];
+							break;
 						case storageKeys.audio.loop:
 							floatingAudio.loop = options[keys[i]];
 							break;
@@ -601,6 +608,9 @@ function overrideOptions() {
 							floatingImageStyleBorderWidth = options[keys[i]];
 							floatingImage.style.borderWidth = `${floatingImageStyleBorderWidth}px`;
 							break;
+						case storageKeys.image.enabled:
+							floatingImageIsEnabled = options[keys[i]];
+							break;
 						case storageKeys.pdf.aspectRatio:
 							floatingPDFAspectRatio = options[keys[i]];
 							break;
@@ -608,11 +618,17 @@ function overrideOptions() {
 							floatingPDFStyleBorderWidth = options[keys[i]];
 							floatingPDF.style.borderWidth = `${floatingPDFStyleBorderWidth}px`;
 							break;
+						case storageKeys.pdf.enabled:
+							floatingPDFIsEnabled = options[keys[i]];
+							break;
 						case storageKeys.video.aspectRatio:
 							floatingVideoAspectRatio = options[keys[i]];
 							break;
 						case storageKeys.video.autoplay:
 							floatingVideo.autoplay = options[keys[i]];
+							break;
+						case storageKeys.video.enabled:
+							floatingVideoIsEnabled = options[keys[i]];
 							break;
 						case storageKeys.video.loop:
 							floatingVideo.loop = options[keys[i]];
