@@ -18,27 +18,31 @@ var storageKeysXmlHttpRequest = new XMLHttpRequest();
 
 var audioAspectRatioInput = document.getElementById('audioAspectRatioInput');
 var audioAutoplayInput = document.getElementById('audioAutoplayInput');
+var audioDelayInput = document.getElementById('audioDelayInput');
 var audioEnabledInput = document.getElementById('audioEnabledInput');
 var audioLoopInput = document.getElementById('audioLoopInput');
-var audioVolumeInput = document.getElementById('audioVolumeInput');
 var audioOptions = document.getElementsByName('audio');
+var audioVolumeInput = document.getElementById('audioVolumeInput');
 
 var imageAspectRatioInput = document.getElementById('imageAspectRatioInput');
 var imageBorderWidthInput = document.getElementById('imageBorderWidthInput');
+var imageDelayInput = document.getElementById('imageDelayInput');
 var imageEnabledInput = document.getElementById('imageEnabledInput');
 var imageOptions = document.getElementsByName('image');
 
 var pdfAspectRatioInput = document.getElementById('pdfAspectRatioInput');
 var pdfBorderWidthInput = document.getElementById('pdfBorderWidthInput');
+var pdfDelayInput = document.getElementById('pdfDelayInput');
 var pdfEnabledInput = document.getElementById('pdfEnabledInput');
 var pdfOptions = document.getElementsByName('pdf');
 
 var videoAspectRatioInput = document.getElementById('videoAspectRatioInput');
 var videoAutoplayInput = document.getElementById('videoAutoplayInput');
+var videoDelayInput = document.getElementById('videoDelayInput');
 var videoEnabledInput = document.getElementById('videoEnabledInput');
 var videoLoopInput = document.getElementById('videoLoopInput');
-var videoVolumeInput = document.getElementById('videoVolumeInput');
 var videoOptions = document.getElementsByName('video');
+var videoVolumeInput = document.getElementById('videoVolumeInput');
 
 var initializeOptionsButton = document.getElementById('initializeOptionsButton');
 
@@ -60,20 +64,24 @@ function main() {
 	document.getElementById('audioEnabledLabel').innerText = browser.i18n.getMessage('enabled');
 	document.getElementById('audioLoopLabel').innerText = browser.i18n.getMessage('loop');
 	document.getElementById('audioVolumeLabel').innerText = browser.i18n.getMessage('volume');
+	document.getElementById('audioDelayLabel').innerText = `${browser.i18n.getMessage('delay')}[${browser.i18n.getMessage('second')}]`;
 	document.getElementById('imageLegend').innerText = browser.i18n.getMessage('image');
 	document.getElementById('imageAspectRatioLabel').innerText = browser.i18n.getMessage('aspectRatio');
 	document.getElementById('imageBorderWidthLabel').innerText = browser.i18n.getMessage('borderWidth');
 	document.getElementById('imageEnabledLabel').innerText = browser.i18n.getMessage('enabled');
+	document.getElementById('imageDelayLabel').innerText = `${browser.i18n.getMessage('delay')}[${browser.i18n.getMessage('second')}]`;
 	document.getElementById('pdfLegend').innerText = browser.i18n.getMessage('pdf');
 	document.getElementById('pdfAspectRatioLabel').innerText = browser.i18n.getMessage('aspectRatio');
 	document.getElementById('pdfBorderWidthLabel').innerText = browser.i18n.getMessage('borderWidth');
 	document.getElementById('pdfEnabledLabel').innerText = browser.i18n.getMessage('enabled');
+	document.getElementById('pdfDelayLabel').innerText = `${browser.i18n.getMessage('delay')}[${browser.i18n.getMessage('second')}]`;
 	document.getElementById('videoLegend').innerText = browser.i18n.getMessage('video');
 	document.getElementById('videoAspectRatioLabel').innerText = browser.i18n.getMessage('aspectRatio');
 	document.getElementById('videoAutoplayLabel').innerText = browser.i18n.getMessage('autoplay');
 	document.getElementById('videoEnabledLabel').innerText = browser.i18n.getMessage('enabled');
 	document.getElementById('videoLoopLabel').innerText = browser.i18n.getMessage('loop');
 	document.getElementById('videoVolumeLabel').innerText = browser.i18n.getMessage('volume');
+	document.getElementById('videoDelayLabel').innerText = `${browser.i18n.getMessage('delay')}[${browser.i18n.getMessage('second')}]`;
 	initializeOptionsButton.innerText = browser.i18n.getMessage('initializeOptions');
 	initializeOptionsButton.addEventListener('click', initializeOptions);
 	document.getElementById('informationDivision').innerText = browser.i18n.getMessage('optionsHTMLInformation');
@@ -112,6 +120,10 @@ function audioInputOnClick(event) {
 		case audioAutoplayInput.id:
 			browser.storage.sync.set({ [storageKeys.audio.autoplay]: audioAutoplayInput.checked });
 			break;
+		case audioDelayInput.id:
+			browser.storage.sync.set({ [storageKeys.audio.delay]: parseInt(audioDelayInput.value) });
+			document.getElementById('audioDelayValueLabel').innerText = audioDelayInput.value;
+			break;
 		case audioEnabledInput.id:
 			browser.storage.sync.set({ [storageKeys.audio.enabled]: audioEnabledInput.checked });
 			break;
@@ -136,6 +148,10 @@ function checkAudio() {
 					break;
 				case storageKeys.audio.autoplay:
 					audioAutoplayInput.checked = options[storageKeys.audio.autoplay];
+					break;
+				case storageKeys.audio.delay:
+					audioDelayInput.value = options[storageKeys.audio.delay];
+					document.getElementById('audioDelayValueLabel').innerText = audioDelayInput.value;
 					break;
 				case storageKeys.audio.enabled:
 					audioEnabledInput.checked = options[storageKeys.audio.enabled];
@@ -162,6 +178,10 @@ function imageInputOnClick(event) {
 			browser.storage.sync.set({ [storageKeys.image.borderWidth]: imageBorderWidthInput.value });
 			document.getElementById('imageBorderWidthValueLabel').innerText = imageBorderWidthInput.value;
 			break;
+		case imageDelayInput.id:
+			browser.storage.sync.set({ [storageKeys.image.delay]: parseInt(imageDelayInput.value) });
+			document.getElementById('imageDelayValueLabel').innerText = imageDelayInput.value;
+			break;
 		case imageEnabledInput.id:
 			browser.storage.sync.set({ [storageKeys.image.enabled]: imageEnabledInput.checked });
 			break;
@@ -181,6 +201,10 @@ function checkImage() {
 					imageBorderWidthInput.value = options[storageKeys.image.borderWidth];
 					document.getElementById('imageBorderWidthValueLabel').innerText = imageBorderWidthInput.value;
 					break;
+				case storageKeys.image.delay:
+					imageDelayInput.value = options[storageKeys.image.delay];
+					document.getElementById('imageDelayValueLabel').innerText = imageDelayInput.value;
+					break;
 				case storageKeys.image.enabled:
 					imageEnabledInput.checked = options[storageKeys.image.enabled];
 					break;
@@ -198,6 +222,10 @@ function pdfInputOnClick(event) {
 		case pdfBorderWidthInput.id:
 			browser.storage.sync.set({ [storageKeys.pdf.borderWidth]: pdfBorderWidthInput.value });
 			document.getElementById('pdfBorderWidthValueLabel').innerText = pdfBorderWidthInput.value;
+			break;
+		case pdfDelayInput.id:
+			browser.storage.sync.set({ [storageKeys.pdf.delay]: parseInt(pdfDelayInput.value) });
+			document.getElementById('pdfDelayValueLabel').innerText = pdfDelayInput.value;
 			break;
 		case pdfEnabledInput.id:
 			browser.storage.sync.set({ [storageKeys.pdf.enabled]: pdfEnabledInput.checked });
@@ -218,6 +246,10 @@ function checkPDF() {
 					pdfBorderWidthInput.value = options[storageKeys.pdf.borderWidth];
 					document.getElementById('pdfBorderWidthValueLabel').innerText = pdfBorderWidthInput.value;
 					break;
+				case storageKeys.pdf.delay:
+					pdfDelayInput.value = options[storageKeys.pdf.delay];
+					document.getElementById('pdfDelayValueLabel').innerText = pdfDelayInput.value;
+					break;
 				case storageKeys.pdf.enabled:
 					pdfEnabledInput.checked = options[storageKeys.pdf.enabled];
 					break;
@@ -234,6 +266,10 @@ function videoInputOnClick(event) {
 			break;
 		case videoAutoplayInput.id:
 			browser.storage.sync.set({ [storageKeys.video.autoplay]: videoAutoplayInput.checked });
+			break;
+		case videoDelayInput.id:
+			browser.storage.sync.set({ [storageKeys.video.delay]: parseInt(videoDelayInput.value) });
+			document.getElementById('videoDelayValueLabel').innerText = videoDelayInput.value;
 			break;
 		case videoEnabledInput.id:
 			browser.storage.sync.set({ [storageKeys.video.enabled]: videoEnabledInput.checked });
@@ -260,6 +296,10 @@ function checkVideo() {
 				case storageKeys.video.autoplay:
 					videoAutoplayInput.checked = options[storageKeys.video.autoplay];
 					break;
+				case storageKeys.video.delay:
+					videoDelayInput.value = options[storageKeys.video.delay];
+					document.getElementById('videoDelayValueLabel').innerText = videoDelayInput.value;
+					break;
 				case storageKeys.video.enabled:
 					videoEnabledInput.checked = options[storageKeys.video.enabled];
 					break;
@@ -278,26 +318,34 @@ function checkVideo() {
 function initializeOptions() {
 	browser.storage.sync.set({ [storageKeys.audio.aspectRatio]: defaultValues.audio.aspectRatio });
 	browser.storage.sync.set({ [storageKeys.audio.autoplay]: defaultValues.audio.autoplay });
+	browser.storage.sync.set({ [storageKeys.audio.delay]: defaultValues.audio.delay });
 	browser.storage.sync.set({ [storageKeys.audio.enabled]: defaultValues.audio.enabled });
 	browser.storage.sync.set({ [storageKeys.audio.loop]: defaultValues.audio.loop });
 	browser.storage.sync.set({ [storageKeys.audio.volume]: defaultValues.audio.volume });
 	browser.storage.sync.set({ [storageKeys.image.aspectRatio]: defaultValues.image.aspectRatio });
 	browser.storage.sync.set({ [storageKeys.image.borderWidth]: defaultValues.image.borderWidth });
+	browser.storage.sync.set({ [storageKeys.image.delay]: defaultValues.image.delay });
 	browser.storage.sync.set({ [storageKeys.image.enabled]: defaultValues.image.enabled });
 	browser.storage.sync.set({ [storageKeys.pdf.aspectRatio]: defaultValues.pdf.aspectRatio });
 	browser.storage.sync.set({ [storageKeys.pdf.borderWidth]: defaultValues.pdf.borderWidth });
+	browser.storage.sync.set({ [storageKeys.pdf.delay]: defaultValues.pdf.delay });
 	browser.storage.sync.set({ [storageKeys.pdf.enabled]: defaultValues.pdf.enabled });
 	browser.storage.sync.set({ [storageKeys.video.aspectRatio]: defaultValues.video.aspectRatio });
 	browser.storage.sync.set({ [storageKeys.video.autoplay]: defaultValues.video.autoplay });
+	browser.storage.sync.set({ [storageKeys.video.delay]: defaultValues.video.delay });
 	browser.storage.sync.set({ [storageKeys.video.enabled]: defaultValues.video.enabled });
 	browser.storage.sync.set({ [storageKeys.video.loop]: defaultValues.video.loop });
 	browser.storage.sync.set({ [storageKeys.video.volume]: defaultValues.video.volume });
 	document.getElementById('audioAspectRatioValueLabel').innerText = defaultValues.audio.aspectRatio;
+	document.getElementById('audioDelayValueLabel').innerText = defaultValues.audio.delay;
 	document.getElementById('audioVolumeValueLabel').innerText = defaultValues.audio.volume;
 	document.getElementById('imageAspectRatioValueLabel').innerText = defaultValues.image.aspectRatio;
 	document.getElementById('imageBorderWidthValueLabel').innerText = defaultValues.image.borderWidth;
+	document.getElementById('imageDelayValueLabel').innerText = defaultValues.image.delay;
 	document.getElementById('pdfAspectRatioValueLabel').innerText = defaultValues.pdf.aspectRatio;
 	document.getElementById('pdfBorderWidthValueLabel').innerText = defaultValues.pdf.borderWidth;
+	document.getElementById('pdfDelayValueLabel').innerText = defaultValues.pdf.delay;
 	document.getElementById('videoAspectRatioValueLabel').innerText = defaultValues.video.aspectRatio;
+	document.getElementById('videoDelayValueLabel').innerText = defaultValues.video.delay;
 	document.getElementById('videoVolumeValueLabel').innerText = defaultValues.video.volume;
 }

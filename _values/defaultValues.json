@@ -3,6 +3,7 @@
 		"aspectRatio": 0.5,
 		"autoplay": true,
 		"enabled": true,
+		"delay": 0,
 		"loop": false,
 		"volume": 0.25
 	},
@@ -10,12 +11,14 @@
 	"image": {
 		"aspectRatio": 0.5,
 		"borderWidth": 8,
+		"delay": 0,
 		"enabled": true
 	},
 
 	"pdf": {
 		"aspectRatio": 0.5,
 		"borderWidth": 8,
+		"delay": 0,
 		"enabled": true
 	},
 
@@ -23,6 +26,7 @@
 		"aspectRatio": 0.5,
 		"autoplay": true,
 		"enabled": true,
+		"delay": 0,
 		"loop": false,
 		"volume": 0.25
 	}

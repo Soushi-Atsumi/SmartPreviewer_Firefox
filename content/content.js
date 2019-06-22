@@ -20,8 +20,10 @@ const contentState = { loading: 0, loaded: 1, error: 2 };
 //Audio
 var floatingAudio = document.createElement('audio');
 var floatingAudioAspectRatio;
-var floatingAudioIsEnabled;
 const floatingAudioDefaultHeight = 40;
+var floatingAudioIsEnabled;
+var floatingAudioTimeoutID = 0;
+var floatingAudioTimeout;
 
 //Image
 var floatingImage = document.createElement('img');
@@ -29,6 +31,8 @@ var floatingImageAspectRatio;
 var floatingImageIntervalID = 0;
 var floatingImageIsEnabled;
 var floatingImageStyleBorderWidth;
+var floatingImageTimeoutID = 0;
+var floatingImageTimeout;
 
 //PDF
 var floatingPDF = document.createElement('iframe');
@@ -36,11 +40,15 @@ var floatingPDFAspectRatio;
 var floatingPDFIntervalID = 0;
 var floatingPDFIsEnabled;
 var floatingPDFStyleBorderWidth;
+var floatingPDFTimeoutID = 0;
+var floatingPDFTimeout;
 
 //Video
 var floatingVideo = document.createElement('video');
 var floatingVideoAspectRatio;
 var floatingVideoIsEnabled;
+var floatingVideoTimeoutID = 0;
+var floatingVideoTimeout;
 
 main();
 
@@ -59,7 +67,6 @@ function main() {
 }
 
 function initializeAudio() {
-	floatingAudioAspectRatio = defaultValues.audio.aspectRatio;
 	floatingAudio.autoplay = defaultValues.audio.autoplay;
 	floatingAudio.controls = true;
 	floatingAudio.id = 'floatingAudio';
@@ -69,8 +76,9 @@ function initializeAudio() {
 	floatingAudio.style.position = 'fixed';
 	floatingAudio.style.zIndex = 2147483647;
 	floatingAudio.volume = defaultValues.audio.volume;
+	floatingAudioAspectRatio = defaultValues.audio.aspectRatio;
 	floatingAudioIsEnabled = defaultValues.audio.enabled;
-	document.body.appendChild(floatingAudio);
+	floatingAudioTimeout = defaultValues.audio.delay;
 
 	floatingAudio.addEventListener('loadedmetadata', () => {
 		setFloatingAudioSize(floatingAudioAspectRatio);
@@ -105,7 +113,6 @@ function initializeAudio() {
 function initializeImage() {
 	const floatingImageDefaultHeight = 100;
 	const floatingImageDefaultWidth = 100;
-	floatingImageAspectRatio = defaultValues.image.aspectRatio;
 	floatingImageStyleBorderWidth = defaultValues.image.borderWidth;
 	floatingImage.id = 'floatingImage';
 	floatingImage.height = floatingImageDefaultHeight;
@@ -115,9 +122,9 @@ function initializeImage() {
 	floatingImage.style.position = 'fixed';
 	floatingImage.style.zIndex = 2147483647;
 	floatingImage.width = floatingImageDefaultWidth;
+	floatingImageAspectRatio = defaultValues.image.aspectRatio;
 	floatingImageIsEnabled = defaultValues.image.enabled;
-
-	document.body.appendChild(floatingImage);
+	floatingImageTimeout = defaultValues.image.delay;
 
 	floatingImage.addEventListener('click', (event) => {
 		if (event.button === 0) {
@@ -174,7 +181,6 @@ function initializeImage() {
 function initializePDF() {
 	const floatingPDFDefaultHeight = 100;
 	const floatingPDFDefaultWidth = 100;
-	floatingPDFAspectRatio = defaultValues.pdf.aspectRatio;
 	floatingPDFStyleBorderWidth = defaultValues.pdf.borderWidth;
 	floatingPDF.id = 'floatingPDF';
 	floatingPDF.height = floatingPDFDefaultHeight;
@@ -185,9 +191,9 @@ function initializePDF() {
 	floatingPDF.style.position = 'fixed';
 	floatingPDF.style.zIndex = 2147483647;
 	floatingPDF.width = floatingPDFDefaultWidth;
+	floatingPDFAspectRatio = defaultValues.pdf.aspectRatio;
 	floatingPDFIsEnabled = defaultValues.pdf.enabled;
-
-	document.body.appendChild(floatingPDF);
+	floatingPDFTimeout = defaultValues.pdf.delay;
 
 	floatingPDF.addEventListener('click', () => {
 		window.open(floatingPDF.getAttribute('src'));
@@ -221,7 +227,6 @@ function initializePDF() {
 function initializeVideo() {
 	const floatingVideoDefaultHeight = 90;
 	const floatingVideoDefaultWidth = 160;
-	floatingVideoAspectRatio = defaultValues.video.aspectRatio;
 	floatingVideo.autoplay = defaultValues.video.autoplay;
 	floatingVideo.controls = true;
 	floatingVideo.height = floatingVideoDefaultHeight;
@@ -232,9 +237,9 @@ function initializeVideo() {
 	floatingVideo.style.zIndex = 2147483647;
 	floatingVideo.volume = defaultValues.video.volume;
 	floatingVideo.width = floatingVideoDefaultWidth;
+	floatingVideoAspectRatio = defaultValues.video.aspectRatio;
 	floatingVideoIsEnabled = defaultValues.video.enabled;
-
-	document.body.appendChild(floatingVideo);
+	floatingVideoTimeout = defaultValues.video.delay;
 
 	floatingVideo.addEventListener('loadedmetadata', () => {
 		setFloatingVideoSize(floatingVideoAspectRatio, floatingVideoAspectRatio);
@@ -290,21 +295,25 @@ function addPreviewers() {
 	const audioExtensions = ['aac', 'flac', 'm4a', 'mp3', 'ogg', 'wav'];
 	const regexAudio = new RegExp(`https?:\\/\\/.*\\/.*\\.(${audioExtensions.join('|')})`, 'i');
 	const regexAudioRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${audioExtensions.join('|')})`, 'i');
+	floatingAudioIsEnabled && document.body.appendChild(floatingAudio);
 
 	//Image
 	const imageExtensions = ['gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png', 'svg'];
 	const regexImage = new RegExp(`https?:\\/\\/.*\\/.*\\.(${imageExtensions.join('|')})`, 'i');
 	const regexImageRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${imageExtensions.join('|')})`, 'i');
+	floatingImageIsEnabled && document.body.appendChild(floatingImage);
 
 	//PDF
 	const pdfExtensions = ['pdf'];
 	const regexPDF = new RegExp(`https?:\\/\\/.*\\/.*\\.(${pdfExtensions.join('|')})`, 'i');
 	const regexPDFRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${pdfExtensions.join('|')})`, 'i');
+	floatingPDFIsEnabled && document.body.appendChild(floatingPDF);
 
 	//Video
 	const videoExtensions = ['mov', 'mp4', 'webm', 'wmv'];
 	const regexVideo = new RegExp(`https?:\\/\\/.*\\/.*\\.(${videoExtensions.join('|')})`, 'i');
 	const regexVideoRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${videoExtensions.join('|')})`, 'i');
+	floatingVideoIsEnabled && document.body.appendChild(floatingVideo);
 
 	let hyperlinks = document.getElementsByTagName('a');
 
@@ -312,117 +321,141 @@ function addPreviewers() {
 		if (floatingAudioIsEnabled && regexAudio.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
-					let targetHref = event.target.href;
-					latestMousePositionX = event.clientX;
-					latestMousePositionY = event.clientY;
+					window.clearTimeout(floatingAudioTimeoutID);
+					floatingAudioTimeoutID = window.setTimeout(function () {
+						let targetHref = event.target.href;
+						latestMousePositionX = event.clientX;
+						latestMousePositionY = event.clientY;
 
-					if (targetHref.match(regexAudio) === null) {
-						floatingAudio.removeAttribute('src');
-					} else if (targetHref.match(regexAudioRepeating) === null) {
-						floatingAudio.setAttribute('src', targetHref.match(regexAudio)[0]);
-					} else {
-						let result = targetHref.match(regexAudioRepeating);
-						while (result !== null) {
-							targetHref = result[0].match(regexAudio)[0];
-							result = targetHref.match(regexAudioRepeating);
+						if (targetHref.match(regexAudio) === null) {
+							floatingAudio.removeAttribute('src');
+						} else if (targetHref.match(regexAudioRepeating) === null) {
+							floatingAudio.setAttribute('src', targetHref.match(regexAudio)[0]);
+						} else {
+							let result = targetHref.match(regexAudioRepeating);
+							while (result !== null) {
+								targetHref = result[0].match(regexAudio)[0];
+								result = targetHref.match(regexAudioRepeating);
+							}
+
+							floatingAudio.setAttribute('src', targetHref);
 						}
 
-						floatingAudio.setAttribute('src', targetHref);
-					}
-
-					if (floatingAudio.getAttribute('src') !== '') {
-						setFloatingAudioSize();
-						setFloatingAudioFromMousePosition(latestMousePositionX, latestMousePositionY);
-						floatingAudio.style.display = 'inline-block';
-						return;
-					}
+						if (floatingAudio.getAttribute('src') !== '') {
+							setFloatingAudioSize();
+							setFloatingAudioFromMousePosition(latestMousePositionX, latestMousePositionY);
+							floatingAudio.style.display = 'inline-block';
+							return;
+						}
+					}, floatingAudioTimeout);
 				}
+			});
+			hyperlinks[i].addEventListener('mouseleave', (event) => {
+				window.clearTimeout(floatingAudioTimeoutID);
 			});
 		} else if (floatingImageIsEnabled && regexImage.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
-					let targetHref = event.target.href;
-					latestMousePositionX = event.clientX;
-					latestMousePositionY = event.clientY;
+					window.clearTimeout(floatingImageTimeoutID);
+					floatingImageTimeoutID = window.setTimeout(function () {
+						let targetHref = event.target.href;
+						latestMousePositionX = event.clientX;
+						latestMousePositionY = event.clientY;
 
-					if (targetHref.match(regexImage) === null) {
-						floatingImage.removeAttribute('src');
-					} else if (targetHref.match(regexImageRepeating) === null) {
-						floatingImage.setAttribute('src', targetHref.match(regexImage)[0]);
-					} else {
-						let result = targetHref.match(regexImageRepeating);
-						while (result !== null) {
-							targetHref = result[0].match(regexImage)[0];
-							result = targetHref.match(regexImageRepeating);
+						if (targetHref.match(regexImage) === null) {
+							floatingImage.removeAttribute('src');
+						} else if (targetHref.match(regexImageRepeating) === null) {
+							floatingImage.setAttribute('src', targetHref.match(regexImage)[0]);
+						} else {
+							let result = targetHref.match(regexImageRepeating);
+							while (result !== null) {
+								targetHref = result[0].match(regexImage)[0];
+								result = targetHref.match(regexImageRepeating);
+							}
+
+							floatingImage.setAttribute('src', targetHref);
 						}
 
-						floatingImage.setAttribute('src', targetHref);
-					}
-
-					if (floatingImage.getAttribute('src') !== '') {
-						setFloatingImageFromMousePosition(latestMousePositionX, latestMousePositionY);
-						toggleFloatingImageBorderColor(contentState.loading);
-						floatingImage.style.display = 'inline-block';
-						return;
-					}
+						if (floatingImage.getAttribute('src') !== '') {
+							setFloatingImageFromMousePosition(latestMousePositionX, latestMousePositionY);
+							toggleFloatingImageBorderColor(contentState.loading);
+							floatingImage.style.display = 'inline-block';
+							return;
+						}
+					}, floatingImageTimeout);
 				}
+			});
+			hyperlinks[i].addEventListener('mouseleave', (event) => {
+				window.clearTimeout(floatingImageTimeoutID);
 			});
 		} else if (floatingPDFIsEnabled && regexPDF.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
-					let targetHref = event.target.href;
-					latestMousePositionX = event.clientX;
-					latestMousePositionY = event.clientY;
+					window.clearTimeout(floatingPDFTimeoutID);
+					floatingPDFTimeoutID = window.setTimeout(function () {
+						let targetHref = event.target.href;
+						latestMousePositionX = event.clientX;
+						latestMousePositionY = event.clientY;
 
-					if (targetHref.match(regexPDF) === null) {
-						floatingPDF.removeAttribute('src');
-					} else if (targetHref.match(regexPDFRepeating) === null) {
-						floatingPDF.setAttribute('src', targetHref.match(regexPDF)[0]);
-					} else {
-						let result = targetHref.match(regexPDFRepeating);
-						while (result !== null) {
-							targetHref = result[0].match(regexPDF)[0];
-							result = targetHref.match(regexPDFRepeating);
+						if (targetHref.match(regexPDF) === null) {
+							floatingPDF.removeAttribute('src');
+						} else if (targetHref.match(regexPDFRepeating) === null) {
+							floatingPDF.setAttribute('src', targetHref.match(regexPDF)[0]);
+						} else {
+							let result = targetHref.match(regexPDFRepeating);
+							while (result !== null) {
+								targetHref = result[0].match(regexPDF)[0];
+								result = targetHref.match(regexPDFRepeating);
+							}
+
+							floatingPDF.setAttribute('src', targetHref);
 						}
 
-						floatingPDF.setAttribute('src', targetHref);
-					}
-
-					if (floatingPDF.getAttribute('src') !== '') {
-						setFloatingPDFFromMousePosition(latestMousePositionX, latestMousePositionY);
-						toggleFloatingPDFBorderColor(contentState.loading);
-						floatingPDF.style.display = 'inline-block';
-						return;
-					}
+						if (floatingPDF.getAttribute('src') !== '') {
+							setFloatingPDFFromMousePosition(latestMousePositionX, latestMousePositionY);
+							toggleFloatingPDFBorderColor(contentState.loading);
+							floatingPDF.style.display = 'inline-block';
+							return;
+						}
+					}, floatingPDFTimeout);
 				}
+			});
+			hyperlinks[i].addEventListener('mouseleave', (event) => {
+				window.clearTimeout(floatingPDFTimeoutID);
 			});
 		} else if (floatingVideoIsEnabled && regexVideo.test(hyperlinks[i].href)) {
 			hyperlinks[i].addEventListener('mouseenter', (event) => {
 				if (!event.shiftKey) {
-					let targetHref = event.target.href;
-					latestMousePositionX = event.clientX;
-					latestMousePositionY = event.clientY;
+					window.clearTimeout(floatingVideoTimeoutID);
+					floatingVideoTimeoutID = window.setTimeout(function () {
+						let targetHref = event.target.href;
+						latestMousePositionX = event.clientX;
+						latestMousePositionY = event.clientY;
 
-					if (targetHref.match(regexVideo) === null) {
-						floatingVideo.removeAttribute('src');
-					} else if (targetHref.match(regexVideoRepeating) === null) {
-						floatingVideo.setAttribute('src', targetHref.match(regexVideo)[0]);
-					} else {
-						let result = targetHref.match(regexVideoRepeating);
-						while (result !== null) {
-							targetHref = result[0].match(regexVideo)[0];
-							result = targetHref.match(regexVideoRepeating);
+						if (targetHref.match(regexVideo) === null) {
+							floatingVideo.removeAttribute('src');
+						} else if (targetHref.match(regexVideoRepeating) === null) {
+							floatingVideo.setAttribute('src', targetHref.match(regexVideo)[0]);
+						} else {
+							let result = targetHref.match(regexVideoRepeating);
+							while (result !== null) {
+								targetHref = result[0].match(regexVideo)[0];
+								result = targetHref.match(regexVideoRepeating);
+							}
+
+							floatingVideo.setAttribute('src', targetHref);
 						}
 
-						floatingVideo.setAttribute('src', targetHref);
-					}
-
-					if (floatingVideo.getAttribute('src') !== '') {
-						setFloatingVideoFromMousePosition(latestMousePositionX, latestMousePositionY);
-						floatingVideo.style.display = 'inline-block';
-						return;
-					}
+						if (floatingVideo.getAttribute('src') !== '') {
+							setFloatingVideoFromMousePosition(latestMousePositionX, latestMousePositionY);
+							floatingVideo.style.display = 'inline-block';
+							return;
+						}
+					}, floatingVideoTimeout);
 				}
+			});
+			hyperlinks[i].addEventListener('mouseleave', (event) => {
+				window.clearTimeout(floatingVideoTimeoutID);
 			});
 		}
 	}
@@ -517,6 +550,7 @@ function setFloatingVideoSize(height = 0.5, width = 0.5) {
 function toggleFloatingImageBorderColor(state) {
 	switch (state) {
 		case contentState.loading:
+			window.clearInterval(floatingImageIntervalID);
 			floatingImageIntervalID = window.setInterval(function () {
 				floatingImage.style.borderTopColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
 				floatingImage.style.borderRightColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
@@ -544,6 +578,7 @@ function toggleFloatingImageBorderColor(state) {
 function toggleFloatingPDFBorderColor(state) {
 	switch (state) {
 		case contentState.loading:
+			window.clearInterval(floatingPDFIntervalID);
 			floatingPDFIntervalID = window.setInterval(function () {
 				floatingPDF.style.borderTopColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
 				floatingPDF.style.borderRightColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
@@ -592,6 +627,9 @@ function overrideOptions() {
 						case storageKeys.audio.autoplay:
 							floatingAudio.autoplay = options[keys[i]];
 							break;
+						case storageKeys.audio.delay:
+							floatingAudioTimeout = options[keys[i]] * 1000;
+							break;
 						case storageKeys.audio.enabled:
 							floatingAudioIsEnabled = options[keys[i]];
 							break;
@@ -608,6 +646,9 @@ function overrideOptions() {
 							floatingImageStyleBorderWidth = options[keys[i]];
 							floatingImage.style.borderWidth = `${floatingImageStyleBorderWidth}px`;
 							break;
+						case storageKeys.image.delay:
+							floatingImageTimeout = options[keys[i]] * 1000;
+							break;
 						case storageKeys.image.enabled:
 							floatingImageIsEnabled = options[keys[i]];
 							break;
@@ -618,6 +659,9 @@ function overrideOptions() {
 							floatingPDFStyleBorderWidth = options[keys[i]];
 							floatingPDF.style.borderWidth = `${floatingPDFStyleBorderWidth}px`;
 							break;
+						case storageKeys.pdf.delay:
+							floatingPDFTimeout = options[keys[i]] * 1000;
+							break;
 						case storageKeys.pdf.enabled:
 							floatingPDFIsEnabled = options[keys[i]];
 							break;
@@ -626,6 +670,9 @@ function overrideOptions() {
 							break;
 						case storageKeys.video.autoplay:
 							floatingVideo.autoplay = options[keys[i]];
+							break;
+						case storageKeys.video.delay:
+							floatingVideoTimeout = options[keys[i]] * 1000;
 							break;
 						case storageKeys.video.enabled:
 							floatingVideoIsEnabled = options[keys[i]];
