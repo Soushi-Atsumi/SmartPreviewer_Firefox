@@ -1,4 +1,9 @@
 ﻿{
+	"refreshing": {
+		"enabled": "refreshingEnabled",
+		"interval": "refreshingInterval"
+	},
+
 	"audio": {
 		"aspectRatio": "audioAspectRatio",
 		"autoplay": "audioAutoplay",

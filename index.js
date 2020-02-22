@@ -43,4 +43,3 @@ tutorialVideoAnchor.href = browser.i18n.getMessage('tutorialVideoHyperlink');
 document.getElementById('contentPermissionReasonDivision').innerText = browser.i18n.getMessage('contentPermissionReason');
 document.getElementById('contentPermissionReasonDescriptionDivision').innerText = browser.i18n.getMessage('contentPermissionReasonDescription');
 document.getElementById('cautionDivision1').innerText = browser.i18n.getMessage('indexHTMLCaution1');
-document.getElementById('cautionDivision2').innerText = browser.i18n.getMessage('indexHTMLCaution2');
