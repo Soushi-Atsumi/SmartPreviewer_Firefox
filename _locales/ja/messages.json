@@ -15,6 +15,10 @@
 		"message": "境界線幅"
 	},
 
+	"checkingNewAnchorsExplanation": {
+		"message": "新しいリンクが生成されたかどうか確認します。\nスクロールするとページ内容が増えるようなサイトで有用です。"
+	},
+
 	"common": {
 		"message": "共通"
 	},
@@ -55,13 +59,8 @@
 	},
 
 	"indexHTMLCaution1": {
-		"message": "注意: 動的に生成されるページでは動作しません。",
-		"description": "この拡張機能の注意1。"
-	},
-
-	"indexHTMLCaution2": {
 		"message": "注意: httpsのサイトにいる場合はhttp経由の内容の読み込みは失敗します。",
-		"description": "この拡張機能の注意2。"
+		"description": "この拡張機能の注意1。"
 	},
 
 	"indexHTMLTitle": {
@@ -71,6 +70,10 @@
 
 	"initializeOptions": {
 		"message": "設定を初期化する"
+	},
+
+	"interval": {
+		"message": "間隔"
 	},
 
 	"loop": {
@@ -101,6 +104,10 @@
 
 	"pdf": {
 		"message": "PDF"
+	},
+
+	"refreshing": {
+		"message": "更新"
 	},
 
 	"second": {

@@ -15,6 +15,10 @@
 		"message": "Border Width"
 	},
 
+	"checkingNewAnchorsExplanation": {
+		"message": "It checks that new links were generated or not.\n This is useful in a site like it generates contents of a page by scrolling."
+	},
+
 	"common": {
 		"message": "Common"
 	},
@@ -55,13 +59,8 @@
 	},
 
 	"indexHTMLCaution1": {
-		"message": "Caution: It does not work on a page which is generated dynamically.",
-		"description": "Cautions1 of this extension."
-	},
-
-	"indexHTMLCaution2": {
 		"message": "Caution: It does not work when this extension loads contents via http if you are on a https site.",
-		"description": "Cautions2 of this extension."
+		"description": "Cautions1 of this extension."
 	},
 
 	"indexHTMLTitle": {
@@ -71,6 +70,10 @@
 
 	"initializeOptions": {
 		"message": "Initialize options"
+	},
+
+	"interval": {
+		"message": "Interval"
 	},
 
 	"loop": {
@@ -101,6 +104,10 @@
 
 	"pdf": {
 		"message": "PDF"
+	},
+
+	"refreshing": {
+		"message": "Refreshing"
 	},
 
 	"second": {
