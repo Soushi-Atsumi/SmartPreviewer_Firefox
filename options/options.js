@@ -94,6 +94,8 @@ function main() {
 	initializeOptionsButton.addEventListener('click', initializeOptions);
 	document.getElementById('informationDivision').innerText = browser.i18n.getMessage('optionsHTMLInformation');
 
+	initializeValueLabels();
+
 	for (let i = 0; i < refreshingOptions.length; i++) {
 		document.options.refreshing[i].addEventListener('change', refreshingInputOnClick);
 	}
@@ -359,28 +361,11 @@ function checkVideo() {
 }
 
 function initializeOptions() {
-	browser.storage.sync.set({ [storageKeys.refreshing.enabled]: defaultValues.refreshing.enabled });
-	browser.storage.sync.set({ [storageKeys.refreshing.interval]: defaultValues.refreshing.interval });
-	browser.storage.sync.set({ [storageKeys.audio.aspectRatio]: defaultValues.audio.aspectRatio });
-	browser.storage.sync.set({ [storageKeys.audio.autoplay]: defaultValues.audio.autoplay });
-	browser.storage.sync.set({ [storageKeys.audio.delay]: defaultValues.audio.delay });
-	browser.storage.sync.set({ [storageKeys.audio.enabled]: defaultValues.audio.enabled });
-	browser.storage.sync.set({ [storageKeys.audio.loop]: defaultValues.audio.loop });
-	browser.storage.sync.set({ [storageKeys.audio.volume]: defaultValues.audio.volume });
-	browser.storage.sync.set({ [storageKeys.image.aspectRatio]: defaultValues.image.aspectRatio });
-	browser.storage.sync.set({ [storageKeys.image.borderWidth]: defaultValues.image.borderWidth });
-	browser.storage.sync.set({ [storageKeys.image.delay]: defaultValues.image.delay });
-	browser.storage.sync.set({ [storageKeys.image.enabled]: defaultValues.image.enabled });
-	browser.storage.sync.set({ [storageKeys.pdf.aspectRatio]: defaultValues.pdf.aspectRatio });
-	browser.storage.sync.set({ [storageKeys.pdf.borderWidth]: defaultValues.pdf.borderWidth });
-	browser.storage.sync.set({ [storageKeys.pdf.delay]: defaultValues.pdf.delay });
-	browser.storage.sync.set({ [storageKeys.pdf.enabled]: defaultValues.pdf.enabled });
-	browser.storage.sync.set({ [storageKeys.video.aspectRatio]: defaultValues.video.aspectRatio });
-	browser.storage.sync.set({ [storageKeys.video.autoplay]: defaultValues.video.autoplay });
-	browser.storage.sync.set({ [storageKeys.video.delay]: defaultValues.video.delay });
-	browser.storage.sync.set({ [storageKeys.video.enabled]: defaultValues.video.enabled });
-	browser.storage.sync.set({ [storageKeys.video.loop]: defaultValues.video.loop });
-	browser.storage.sync.set({ [storageKeys.video.volume]: defaultValues.video.volume });
+	browser.storage.sync.clear();
+	initializeValueLabels();
+}
+
+function initializeValueLabels() {
 	document.getElementById('refreshingIntervalValueLabel').innerText = defaultValues.refreshing.interval;
 	document.getElementById('audioAspectRatioValueLabel').innerText = defaultValues.audio.aspectRatio;
 	document.getElementById('audioDelayValueLabel').innerText = defaultValues.audio.delay;
