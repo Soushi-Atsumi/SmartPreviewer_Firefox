@@ -408,6 +408,8 @@ function initializeVideo() {
 	floatingVideo.addEventListener('loadedmetadata', () => {
 		setFloatingVideoSize(floatingVideoAspectRatio, floatingVideoAspectRatio);
 		setFloatingVideoFromMousePosition(latestMousePositionX, latestMousePositionY);
+		floatingVideo.controls = false;
+		floatingVideo.controls = true;
 	});
 
 	floatingVideo.addEventListener('mouseout', (event) => {
