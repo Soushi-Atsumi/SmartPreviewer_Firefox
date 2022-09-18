@@ -11,54 +11,64 @@
  */
 'use strict';
 
-var defaultValues;
-var defaultValuesXmlHttpRequest = new XMLHttpRequest();
-var storageKeys;
-var storageKeysXmlHttpRequest = new XMLHttpRequest();
+let defaultValues;
+let storageKeys;
+const BASE_PATH = '/_values';
+const DEFAULT_VALUES_JSON_PATH = `${BASE_PATH}/defaultValues.json`;
+const STORAGE_KEYS_JSON_PATH = `${BASE_PATH}/storageKeys.json`;
 
-var refreshingEnabledInput = document.getElementById('refreshingEnabledInput');
-var refreshingIntervalInput = document.getElementById('refreshingIntervalInput');
-var refreshingOptions = document.getElementsByName('refreshing');
+const REFRESHING_ENABLED_INPUT = document.getElementById('refreshingEnabledInput');
+const REFRESHING_INTERVAL_INPUT = document.getElementById('refreshingIntervalInput');
+const REFRESHING_INTERVAL_VALUE_LABEL = document.getElementById('refreshingIntervalValueLabel');
+const REFRESHING_OPTIONS = document.getElementsByName('refreshing');
 
-var audioAspectRatioInput = document.getElementById('audioAspectRatioInput');
-var audioAutoplayInput = document.getElementById('audioAutoplayInput');
-var audioDelayInput = document.getElementById('audioDelayInput');
-var audioEnabledInput = document.getElementById('audioEnabledInput');
-var audioLoopInput = document.getElementById('audioLoopInput');
-var audioOptions = document.getElementsByName('audio');
-var audioVolumeInput = document.getElementById('audioVolumeInput');
+const AUDIO_ASPECT_RATIO_INPUT = document.getElementById('audioAspectRatioInput');
+const AUDIO_ASPECT_RATIO_VALUE_LABEL = document.getElementById('audioAspectRatioValueLabel');
+const AUDIO_AUTOPLAY_INPUT = document.getElementById('audioAutoplayInput');
+const AUDIO_DELAY_INPUT = document.getElementById('audioDelayInput');
+const AUDIO_DELAY_VALUE_LABEL = document.getElementById('audioDelayValueLabel');
+const AUDIO_ENABLED_INPUT = document.getElementById('audioEnabledInput');
+const AUDIO_LOOP_INPUT = document.getElementById('audioLoopInput');
+const AUDIO_OPTIONS = document.getElementsByName('audio');
+const AUDIO_VOLUME_INPUT = document.getElementById('audioVolumeInput');
+const AUDIO_VOLUME_VALUE_LABEL = document.getElementById('audioVolumeValueLabel');
 
-var imageAspectRatioInput = document.getElementById('imageAspectRatioInput');
-var imageBorderWidthInput = document.getElementById('imageBorderWidthInput');
-var imageDelayInput = document.getElementById('imageDelayInput');
-var imageEnabledInput = document.getElementById('imageEnabledInput');
-var imageOptions = document.getElementsByName('image');
+const IMAGE_ASPECT_RATIO_INPUT = document.getElementById('imageAspectRatioInput');
+const IMAGE_ASPECT_RATIO_VALUE_LABEL = document.getElementById('imageAspectRatioValueLabel');
+const IMAGE_BORDER_WIDTH_INPUT = document.getElementById('imageBorderWidthInput');
+const IMAGE_BORDER_WIDTH_VALUE_LABEL = document.getElementById('imageBorderWidthValueLabel');
+const IMAGE_DELAY_INPUT = document.getElementById('imageDelayInput');
+const IMAGE_DELAY_VALUE_LABEL = document.getElementById('imageDelayValueLabel');
+const IMAGE_ENABLED_INPUT = document.getElementById('imageEnabledInput');
+const IMAGE_OPTIONS = document.getElementsByName('image');
 
-var pdfAspectRatioInput = document.getElementById('pdfAspectRatioInput');
-var pdfBorderWidthInput = document.getElementById('pdfBorderWidthInput');
-var pdfDelayInput = document.getElementById('pdfDelayInput');
-var pdfEnabledInput = document.getElementById('pdfEnabledInput');
-var pdfOptions = document.getElementsByName('pdf');
+const PDF_ASPECT_RATIO_INPUT = document.getElementById('pdfAspectRatioInput');
+const PDF_ASPECT_RATIO_VALUE_LABEL = document.getElementById('pdfAspectRatioValueLabel');
+const PDF_BORDER_WIDTH_INPUT = document.getElementById('pdfBorderWidthInput');
+const PDF_BORDER_WIDTH_VALUE_LABEL = document.getElementById('pdfBorderWidthValueLabel');
+const PDF_DELAY_INPUT = document.getElementById('pdfDelayInput');
+const PDF_DELAY_VALUE_LABEL = document.getElementById('pdfDelayValueLabel');
+const PDF_ENABLED_INPUT = document.getElementById('pdfEnabledInput');
+const PDF_OPTIONS = document.getElementsByName('pdf');
 
-var videoAspectRatioInput = document.getElementById('videoAspectRatioInput');
-var videoAutoplayInput = document.getElementById('videoAutoplayInput');
-var videoDelayInput = document.getElementById('videoDelayInput');
-var videoEnabledInput = document.getElementById('videoEnabledInput');
-var videoLoopInput = document.getElementById('videoLoopInput');
-var videoOptions = document.getElementsByName('video');
-var videoVolumeInput = document.getElementById('videoVolumeInput');
+const VIDEO_ASPECT_RATIO_INPUT = document.getElementById('videoAspectRatioInput');
+const VIDEO_ASPECT_RATIO_VALUE_LABEL = document.getElementById('videoAspectRatioValueLabel');
+const VIDEO_AUTOPLAY_INPUT = document.getElementById('videoAutoplayInput');
+const VIDEO_DELAY_INPUT = document.getElementById('videoDelayInput');
+const VIDEO_DELAY_VALUE_LABEL = document.getElementById('videoDelayValueLabel');
+const VIDEO_ENABLED_INPUT = document.getElementById('videoEnabledInput');
+const VIDEO_LOOP_INPUT = document.getElementById('videoLoopInput');
+const VIDEO_OPTIONS = document.getElementsByName('video');
+const VIDEO_VOLUME_INPUT = document.getElementById('videoVolumeInput');
+const VIDEO_VOLUME_VALUE_LABEL = document.getElementById('videoVolumeValueLabel');
 
-var initializeOptionsButton = document.getElementById('initializeOptionsButton');
+const INITIALIZE_OPTIONS_BUTTON = document.getElementById('initializeOptionsButton');
 
 main();
 
-function main() {
-	defaultValuesXmlHttpRequest.open('GET', browser.runtime.getURL('/_values/defaultValues.json'), false);
-	defaultValuesXmlHttpRequest.send();
-	defaultValues = JSON.parse(defaultValuesXmlHttpRequest.responseText);
-	storageKeysXmlHttpRequest.open('GET', browser.runtime.getURL('/_values/storageKeys.json'), false);
-	storageKeysXmlHttpRequest.send();
-	storageKeys = JSON.parse(storageKeysXmlHttpRequest.responseText);
+async function main() {
+	defaultValues = await (await fetch(DEFAULT_VALUES_JSON_PATH)).json();
+	storageKeys = await (await fetch(STORAGE_KEYS_JSON_PATH)).json();
 
 	document.getElementsByTagName('html')[0].lang = browser.i18n.getUILanguage();
 	document.title = browser.i18n.getMessage('optionsHTMLTitle');
@@ -90,274 +100,318 @@ function main() {
 	document.getElementById('videoLoopLabel').innerText = browser.i18n.getMessage('loop');
 	document.getElementById('videoVolumeLabel').innerText = browser.i18n.getMessage('volume');
 	document.getElementById('videoDelayLabel').innerText = `${browser.i18n.getMessage('delay')}[${browser.i18n.getMessage('second')}]`;
-	initializeOptionsButton.innerText = browser.i18n.getMessage('initializeOptions');
-	initializeOptionsButton.addEventListener('click', initializeOptions);
+	INITIALIZE_OPTIONS_BUTTON.innerText = browser.i18n.getMessage('initializeOptions');
+	INITIALIZE_OPTIONS_BUTTON.addEventListener('click', initializeOptions);
 	document.getElementById('informationDivision').innerText = browser.i18n.getMessage('optionsHTMLInformation');
 
 	initializeValueLabels();
 
-	for (let i = 0; i < refreshingOptions.length; i++) {
+	Array.from(document.options.childNodes).filter(e => e.type === 'fieldset')
+		.flatMap(e => Array.from(e.childNodes))
+		.filter(e => e.type === 'range')
+		.forEach(element => element.addEventListener('input', inputValueLabelOnInput));
+
+	for (let i = 0; i < REFRESHING_OPTIONS.length; i++) {
 		document.options.refreshing[i].addEventListener('change', refreshingInputOnClick);
 	}
 
-	checkRefreshing();
+	await checkRefreshing();
 
-	for (let i = 0; i < audioOptions.length; i++) {
+	for (let i = 0; i < AUDIO_OPTIONS.length; i++) {
 		document.options.audio[i].addEventListener('change', audioInputOnClick);
 	}
 
-	checkAudio();
+	await checkAudio();
 
-	for (let i = 0; i < imageOptions.length; i++) {
+	for (let i = 0; i < IMAGE_OPTIONS.length; i++) {
 		document.options.image[i].addEventListener('change', imageInputOnClick);
 	}
 
-	checkImage();
+	await checkImage();
 
-	for (let i = 0; i < pdfOptions.length; i++) {
+	for (let i = 0; i < PDF_OPTIONS.length; i++) {
 		document.options.pdf[i].addEventListener('change', pdfInputOnClick);
 	}
 
-	checkPDF();
+	await checkPDF();
 
-	for (let i = 0; i < videoOptions.length; i++) {
+	for (let i = 0; i < VIDEO_OPTIONS.length; i++) {
 		document.options.video[i].addEventListener('change', videoInputOnClick);
 	}
 
-	checkVideo();
+	await checkVideo();
+}
+
+function inputValueLabelOnInput(event) {
+	switch (event.target.id) {
+		case REFRESHING_INTERVAL_INPUT.id:
+			REFRESHING_INTERVAL_VALUE_LABEL.innerText = REFRESHING_INTERVAL_INPUT.value;
+			break;
+		case AUDIO_ASPECT_RATIO_INPUT.id:
+			AUDIO_ASPECT_RATIO_VALUE_LABEL.innerText = AUDIO_ASPECT_RATIO_INPUT.value;
+			break;
+		case AUDIO_DELAY_INPUT.id:
+			AUDIO_DELAY_VALUE_LABEL.innerText = AUDIO_DELAY_INPUT.value;
+			break;
+		case AUDIO_VOLUME_INPUT.id:
+			AUDIO_VOLUME_VALUE_LABEL.innerText = AUDIO_VOLUME_INPUT.value;
+			break;
+		case IMAGE_ASPECT_RATIO_INPUT.id:
+			IMAGE_ASPECT_RATIO_VALUE_LABEL.innerText = IMAGE_ASPECT_RATIO_INPUT.value;
+			break;
+		case IMAGE_BORDER_WIDTH_INPUT.id:
+			IMAGE_BORDER_WIDTH_VALUE_LABEL.innerText = IMAGE_BORDER_WIDTH_INPUT.value;
+			break;
+		case IMAGE_DELAY_INPUT.id:
+			IMAGE_DELAY_VALUE_LABEL.innerText = IMAGE_DELAY_INPUT.value;
+			break;
+		case PDF_ASPECT_RATIO_INPUT.id:
+			PDF_ASPECT_RATIO_VALUE_LABEL.innerText = PDF_ASPECT_RATIO_INPUT.value;
+			break;
+		case PDF_BORDER_WIDTH_INPUT.id:
+			PDF_BORDER_WIDTH_VALUE_LABEL.innerText = PDF_BORDER_WIDTH_INPUT.value;
+			break;
+		case PDF_DELAY_INPUT.id:
+			PDF_DELAY_VALUE_LABEL.innerText = PDF_DELAY_INPUT.value;
+			break;
+		case VIDEO_ASPECT_RATIO_INPUT.id:
+			VIDEO_ASPECT_RATIO_VALUE_LABEL.innerText = VIDEO_ASPECT_RATIO_INPUT.value;
+			break;
+		case VIDEO_DELAY_INPUT.id:
+			VIDEO_DELAY_VALUE_LABEL.innerText = VIDEO_DELAY_INPUT.value;
+			break;
+		case VIDEO_VOLUME_INPUT.id:
+			VIDEO_VOLUME_VALUE_LABEL.innerText = VIDEO_VOLUME_INPUT.value;
+			break;
+	}
 }
 
 function refreshingInputOnClick(event) {
 	switch (event.target.id) {
-		case refreshingEnabledInput.id:
-			browser.storage.sync.set({ [storageKeys.refreshing.enabled]: refreshingEnabledInput.checked });
+		case REFRESHING_ENABLED_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.refreshing.enabled]: REFRESHING_ENABLED_INPUT.checked });
 			break;
-		case refreshingIntervalInput.id:
-			browser.storage.sync.set({ [storageKeys.refreshing.interval]: parseFloat(refreshingIntervalInput.value) });
-			document.getElementById('refreshingIntervalValueLabel').innerText = refreshingIntervalInput.value;
+		case REFRESHING_INTERVAL_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.refreshing.interval]: parseFloat(REFRESHING_INTERVAL_INPUT.value) });
+			REFRESHING_INTERVAL_VALUE_LABEL.innerText = REFRESHING_INTERVAL_INPUT.value;
 			break;
 	}
 }
 
-function checkRefreshing(event) {
-	browser.storage.sync.get(Object.values(storageKeys.refreshing), (options) => {
-		let keys = Object.keys(options);
-		for (let i = 0; i < keys.length; i++) {
-			switch (keys[i]) {
-				case storageKeys.refreshing.enabled:
-					refreshingEnabledInput.checked = options[storageKeys.refreshing.enabled];
-					break;
-				case storageKeys.refreshing.interval:
-					refreshingIntervalInput.value = options[storageKeys.refreshing.interval];
-					document.getElementById('refreshingIntervalValueLabel').innerText = refreshingIntervalInput.value;
-					break;
-			}
+async function checkRefreshing(_) {
+	const OPTIONS = await browser.storage.sync.get(Object.values(storageKeys.refreshing));
+	const KEYS = Object.keys(OPTIONS);
+	for (let i = 0; i < KEYS.length; i++) {
+		switch (KEYS[i]) {
+			case storageKeys.refreshing.enabled:
+				REFRESHING_ENABLED_INPUT.checked = OPTIONS[storageKeys.refreshing.enabled];
+				break;
+			case storageKeys.refreshing.interval:
+				REFRESHING_INTERVAL_INPUT.value = OPTIONS[storageKeys.refreshing.interval];
+				REFRESHING_INTERVAL_VALUE_LABEL.innerText = REFRESHING_INTERVAL_INPUT.value;
+				break;
 		}
-	});
+	}
 }
 
 function audioInputOnClick(event) {
 	switch (event.target.id) {
-		case audioAspectRatioInput.id:
-			browser.storage.sync.set({ [storageKeys.audio.aspectRatio]: parseFloat(audioAspectRatioInput.value) });
-			document.getElementById('audioAspectRatioValueLabel').innerText = audioAspectRatioInput.value;
+		case AUDIO_ASPECT_RATIO_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.audio.aspectRatio]: parseFloat(AUDIO_ASPECT_RATIO_INPUT.value) });
+			AUDIO_ASPECT_RATIO_VALUE_LABEL.innerText = AUDIO_ASPECT_RATIO_INPUT.value;
 			break;
-		case audioAutoplayInput.id:
-			browser.storage.sync.set({ [storageKeys.audio.autoplay]: audioAutoplayInput.checked });
+		case AUDIO_AUTOPLAY_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.audio.autoplay]: AUDIO_AUTOPLAY_INPUT.checked });
 			break;
-		case audioDelayInput.id:
-			browser.storage.sync.set({ [storageKeys.audio.delay]: parseFloat(audioDelayInput.value) });
-			document.getElementById('audioDelayValueLabel').innerText = audioDelayInput.value;
+		case AUDIO_DELAY_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.audio.delay]: parseFloat(AUDIO_DELAY_INPUT.value) });
+			AUDIO_DELAY_VALUE_LABEL.innerText = AUDIO_DELAY_INPUT.value;
 			break;
-		case audioEnabledInput.id:
-			browser.storage.sync.set({ [storageKeys.audio.enabled]: audioEnabledInput.checked });
+		case AUDIO_ENABLED_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.audio.enabled]: AUDIO_ENABLED_INPUT.checked });
 			break;
-		case audioLoopInput.id:
-			browser.storage.sync.set({ [storageKeys.audio.loop]: audioLoopInput.checked });
+		case AUDIO_LOOP_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.audio.loop]: AUDIO_LOOP_INPUT.checked });
 			break;
-		case audioVolumeInput.id:
-			browser.storage.sync.set({ [storageKeys.audio.volume]: parseFloat(audioVolumeInput.value) });
-			document.getElementById('audioVolumeValueLabel').innerText = audioVolumeInput.value;
+		case AUDIO_VOLUME_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.audio.volume]: parseFloat(AUDIO_VOLUME_INPUT.value) });
+			AUDIO_VOLUME_VALUE_LABEL.innerText = AUDIO_VOLUME_INPUT.value;
 			break;
 	}
 }
 
-function checkAudio() {
-	browser.storage.sync.get(Object.values(storageKeys.audio), (options) => {
-		let keys = Object.keys(options);
-		for (let i = 0; i < keys.length; i++) {
-			switch (keys[i]) {
-				case storageKeys.audio.aspectRatio:
-					audioAspectRatioInput.value = options[storageKeys.audio.aspectRatio];
-					document.getElementById('audioAspectRatioValueLabel').innerText = audioAspectRatioInput.value;
-					break;
-				case storageKeys.audio.autoplay:
-					audioAutoplayInput.checked = options[storageKeys.audio.autoplay];
-					break;
-				case storageKeys.audio.delay:
-					audioDelayInput.value = options[storageKeys.audio.delay];
-					document.getElementById('audioDelayValueLabel').innerText = audioDelayInput.value;
-					break;
-				case storageKeys.audio.enabled:
-					audioEnabledInput.checked = options[storageKeys.audio.enabled];
-					break;
-				case storageKeys.audio.loop:
-					audioLoopInput.checked = options[storageKeys.audio.loop];
-					break;
-				case storageKeys.audio.volume:
-					audioVolumeInput.value = options[storageKeys.audio.volume];
-					document.getElementById('audioVolumeValueLabel').innerText = audioVolumeInput.value;
-					break;
-			}
+async function checkAudio() {
+	const OPTIONS = await browser.storage.sync.get(Object.values(storageKeys.audio));
+	const KEYS = Object.keys(OPTIONS);
+	for (let i = 0; i < KEYS.length; i++) {
+		switch (KEYS[i]) {
+			case storageKeys.audio.aspectRatio:
+				AUDIO_ASPECT_RATIO_INPUT.value = OPTIONS[storageKeys.audio.aspectRatio];
+				AUDIO_ASPECT_RATIO_VALUE_LABEL.innerText = AUDIO_ASPECT_RATIO_INPUT.value;
+				break;
+			case storageKeys.audio.autoplay:
+				AUDIO_AUTOPLAY_INPUT.checked = OPTIONS[storageKeys.audio.autoplay];
+				break;
+			case storageKeys.audio.delay:
+				AUDIO_DELAY_INPUT.value = OPTIONS[storageKeys.audio.delay];
+				AUDIO_DELAY_VALUE_LABEL.innerText = AUDIO_DELAY_INPUT.value;
+				break;
+			case storageKeys.audio.enabled:
+				AUDIO_ENABLED_INPUT.checked = OPTIONS[storageKeys.audio.enabled];
+				break;
+			case storageKeys.audio.loop:
+				AUDIO_LOOP_INPUT.checked = OPTIONS[storageKeys.audio.loop];
+				break;
+			case storageKeys.audio.volume:
+				AUDIO_VOLUME_INPUT.value = OPTIONS[storageKeys.audio.volume];
+				AUDIO_VOLUME_VALUE_LABEL.innerText = AUDIO_VOLUME_INPUT.value;
+				break;
 		}
-	});
+	}
 }
 
 function imageInputOnClick(event) {
 	switch (event.target.id) {
-		case imageAspectRatioInput.id:
-			browser.storage.sync.set({ [storageKeys.image.aspectRatio]: imageAspectRatioInput.value });
-			document.getElementById('imageAspectRatioValueLabel').innerText = imageAspectRatioInput.value;
+		case IMAGE_ASPECT_RATIO_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.image.aspectRatio]: IMAGE_ASPECT_RATIO_INPUT.value });
+			IMAGE_ASPECT_RATIO_VALUE_LABEL.innerText = IMAGE_ASPECT_RATIO_INPUT.value;
 			break;
-		case imageBorderWidthInput.id:
-			browser.storage.sync.set({ [storageKeys.image.borderWidth]: imageBorderWidthInput.value });
-			document.getElementById('imageBorderWidthValueLabel').innerText = imageBorderWidthInput.value;
+		case IMAGE_BORDER_WIDTH_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.image.borderWidth]: IMAGE_BORDER_WIDTH_INPUT.value });
+			IMAGE_BORDER_WIDTH_VALUE_LABEL.innerText = IMAGE_BORDER_WIDTH_INPUT.value;
 			break;
-		case imageDelayInput.id:
-			browser.storage.sync.set({ [storageKeys.image.delay]: parseFloat(imageDelayInput.value) });
-			document.getElementById('imageDelayValueLabel').innerText = imageDelayInput.value;
+		case IMAGE_DELAY_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.image.delay]: parseFloat(IMAGE_DELAY_INPUT.value) });
+			IMAGE_DELAY_VALUE_LABEL.innerText = IMAGE_DELAY_INPUT.value;
 			break;
-		case imageEnabledInput.id:
-			browser.storage.sync.set({ [storageKeys.image.enabled]: imageEnabledInput.checked });
+		case IMAGE_ENABLED_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.image.enabled]: IMAGE_ENABLED_INPUT.checked });
 			break;
 	}
 }
 
-function checkImage() {
-	browser.storage.sync.get(Object.values(storageKeys.image), (options) => {
-		let keys = Object.keys(options);
-		for (let i = 0; i < keys.length; i++) {
-			switch (keys[i]) {
-				case storageKeys.image.aspectRatio:
-					imageAspectRatioInput.value = options[storageKeys.image.aspectRatio];
-					document.getElementById('imageAspectRatioValueLabel').innerText = imageAspectRatioInput.value;
-					break;
-				case storageKeys.image.borderWidth:
-					imageBorderWidthInput.value = options[storageKeys.image.borderWidth];
-					document.getElementById('imageBorderWidthValueLabel').innerText = imageBorderWidthInput.value;
-					break;
-				case storageKeys.image.delay:
-					imageDelayInput.value = options[storageKeys.image.delay];
-					document.getElementById('imageDelayValueLabel').innerText = imageDelayInput.value;
-					break;
-				case storageKeys.image.enabled:
-					imageEnabledInput.checked = options[storageKeys.image.enabled];
-					break;
-			}
+async function checkImage() {
+	const OPTIONS = await browser.storage.sync.get(Object.values(storageKeys.image));
+	const KEYS = Object.keys(OPTIONS);
+	for (let i = 0; i < KEYS.length; i++) {
+		switch (KEYS[i]) {
+			case storageKeys.image.aspectRatio:
+				IMAGE_ASPECT_RATIO_INPUT.value = OPTIONS[storageKeys.image.aspectRatio];
+				IMAGE_ASPECT_RATIO_VALUE_LABEL.innerText = IMAGE_ASPECT_RATIO_INPUT.value;
+				break;
+			case storageKeys.image.borderWidth:
+				IMAGE_BORDER_WIDTH_INPUT.value = OPTIONS[storageKeys.image.borderWidth];
+				IMAGE_BORDER_WIDTH_VALUE_LABEL.innerText = IMAGE_BORDER_WIDTH_INPUT.value;
+				break;
+			case storageKeys.image.delay:
+				IMAGE_DELAY_INPUT.value = OPTIONS[storageKeys.image.delay];
+				IMAGE_DELAY_VALUE_LABEL.innerText = IMAGE_DELAY_INPUT.value;
+				break;
+			case storageKeys.image.enabled:
+				IMAGE_ENABLED_INPUT.checked = OPTIONS[storageKeys.image.enabled];
+				break;
 		}
-	});
+	}
 }
 
 function pdfInputOnClick(event) {
 	switch (event.target.id) {
-		case pdfAspectRatioInput.id:
-			browser.storage.sync.set({ [storageKeys.pdf.aspectRatio]: pdfAspectRatioInput.value });
-			document.getElementById('pdfAspectRatioValueLabel').innerText = pdfAspectRatioInput.value;
+		case PDF_ASPECT_RATIO_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.pdf.aspectRatio]: PDF_ASPECT_RATIO_INPUT.value });
+			PDF_ASPECT_RATIO_VALUE_LABEL.innerText = PDF_ASPECT_RATIO_INPUT.value;
 			break;
-		case pdfBorderWidthInput.id:
-			browser.storage.sync.set({ [storageKeys.pdf.borderWidth]: pdfBorderWidthInput.value });
-			document.getElementById('pdfBorderWidthValueLabel').innerText = pdfBorderWidthInput.value;
+		case PDF_BORDER_WIDTH_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.pdf.borderWidth]: PDF_BORDER_WIDTH_INPUT.value });
+			PDF_BORDER_WIDTH_VALUE_LABEL.innerText = PDF_BORDER_WIDTH_INPUT.value;
 			break;
-		case pdfDelayInput.id:
-			browser.storage.sync.set({ [storageKeys.pdf.delay]: parseFloat(pdfDelayInput.value) });
-			document.getElementById('pdfDelayValueLabel').innerText = pdfDelayInput.value;
+		case PDF_DELAY_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.pdf.delay]: parseFloat(PDF_DELAY_INPUT.value) });
+			PDF_DELAY_VALUE_LABEL.innerText = PDF_DELAY_INPUT.value;
 			break;
-		case pdfEnabledInput.id:
-			browser.storage.sync.set({ [storageKeys.pdf.enabled]: pdfEnabledInput.checked });
+		case PDF_ENABLED_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.pdf.enabled]: PDF_ENABLED_INPUT.checked });
 			break;
 	}
 }
 
-function checkPDF() {
-	browser.storage.sync.get(Object.values(storageKeys.pdf), (options) => {
-		let keys = Object.keys(options);
-		for (let i = 0; i < keys.length; i++) {
-			switch (keys[i]) {
-				case storageKeys.pdf.aspectRatio:
-					pdfAspectRatioInput.value = options[storageKeys.pdf.aspectRatio];
-					document.getElementById('pdfAspectRatioValueLabel').innerText = pdfAspectRatioInput.value;
-					break;
-				case storageKeys.pdf.borderWidth:
-					pdfBorderWidthInput.value = options[storageKeys.pdf.borderWidth];
-					document.getElementById('pdfBorderWidthValueLabel').innerText = pdfBorderWidthInput.value;
-					break;
-				case storageKeys.pdf.delay:
-					pdfDelayInput.value = options[storageKeys.pdf.delay];
-					document.getElementById('pdfDelayValueLabel').innerText = pdfDelayInput.value;
-					break;
-				case storageKeys.pdf.enabled:
-					pdfEnabledInput.checked = options[storageKeys.pdf.enabled];
-					break;
-			}
+async function checkPDF() {
+	const OPTIONS = await browser.storage.sync.get(Object.values(storageKeys.pdf));
+	const KEYS = Object.keys(OPTIONS);
+	for (let i = 0; i < KEYS.length; i++) {
+		switch (KEYS[i]) {
+			case storageKeys.pdf.aspectRatio:
+				PDF_ASPECT_RATIO_INPUT.value = OPTIONS[storageKeys.pdf.aspectRatio];
+				PDF_ASPECT_RATIO_VALUE_LABEL.innerText = PDF_ASPECT_RATIO_INPUT.value;
+				break;
+			case storageKeys.pdf.borderWidth:
+				PDF_BORDER_WIDTH_INPUT.value = OPTIONS[storageKeys.pdf.borderWidth];
+				PDF_BORDER_WIDTH_VALUE_LABEL.innerText = PDF_BORDER_WIDTH_INPUT.value;
+				break;
+			case storageKeys.pdf.delay:
+				PDF_DELAY_INPUT.value = OPTIONS[storageKeys.pdf.delay];
+				PDF_DELAY_VALUE_LABEL.innerText = PDF_DELAY_INPUT.value;
+				break;
+			case storageKeys.pdf.enabled:
+				PDF_ENABLED_INPUT.checked = OPTIONS[storageKeys.pdf.enabled];
+				break;
 		}
-	});
+	}
 }
 
 function videoInputOnClick(event) {
 	switch (event.target.id) {
-		case videoAspectRatioInput.id:
-			browser.storage.sync.set({ [storageKeys.video.aspectRatio]: parseFloat(videoAspectRatioInput.value) });
-			document.getElementById('videoAspectRatioValueLabel').innerText = videoAspectRatioInput.value;
+		case VIDEO_ASPECT_RATIO_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.video.aspectRatio]: parseFloat(VIDEO_ASPECT_RATIO_INPUT.value) });
+			VIDEO_ASPECT_RATIO_VALUE_LABEL.innerText = VIDEO_ASPECT_RATIO_INPUT.value;
 			break;
-		case videoAutoplayInput.id:
-			browser.storage.sync.set({ [storageKeys.video.autoplay]: videoAutoplayInput.checked });
+		case VIDEO_AUTOPLAY_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.video.autoplay]: VIDEO_AUTOPLAY_INPUT.checked });
 			break;
-		case videoDelayInput.id:
-			browser.storage.sync.set({ [storageKeys.video.delay]: parseFloat(videoDelayInput.value) });
-			document.getElementById('videoDelayValueLabel').innerText = videoDelayInput.value;
+		case VIDEO_DELAY_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.video.delay]: parseFloat(VIDEO_DELAY_INPUT.value) });
+			VIDEO_DELAY_VALUE_LABEL.innerText = VIDEO_DELAY_INPUT.value;
 			break;
-		case videoEnabledInput.id:
-			browser.storage.sync.set({ [storageKeys.video.enabled]: videoEnabledInput.checked });
+		case VIDEO_ENABLED_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.video.enabled]: VIDEO_ENABLED_INPUT.checked });
 			break;
-		case videoLoopInput.id:
-			browser.storage.sync.set({ [storageKeys.video.loop]: videoLoopInput.checked });
+		case VIDEO_LOOP_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.video.loop]: VIDEO_LOOP_INPUT.checked });
 			break;
-		case videoVolumeInput.id:
-			browser.storage.sync.set({ [storageKeys.video.volume]: parseFloat(videoVolumeInput.value) });
-			document.getElementById('videoVolumeValueLabel').innerText = videoVolumeInput.value;
+		case VIDEO_VOLUME_INPUT.id:
+			browser.storage.sync.set({ [storageKeys.video.volume]: parseFloat(VIDEO_VOLUME_INPUT.value) });
+			VIDEO_VOLUME_VALUE_LABEL.innerText = VIDEO_VOLUME_INPUT.value;
 			break;
 	}
 }
 
-function checkVideo() {
-	browser.storage.sync.get(Object.values(storageKeys.video), (options) => {
-		let keys = Object.keys(options);
-		for (let i = 0; i < keys.length; i++) {
-			switch (keys[i]) {
-				case storageKeys.video.aspectRatio:
-					videoAspectRatioInput.value = options[storageKeys.video.aspectRatio];
-					document.getElementById('videoAspectRatioValueLabel').innerText = videoAspectRatioInput.value;
-					break;
-				case storageKeys.video.autoplay:
-					videoAutoplayInput.checked = options[storageKeys.video.autoplay];
-					break;
-				case storageKeys.video.delay:
-					videoDelayInput.value = options[storageKeys.video.delay];
-					document.getElementById('videoDelayValueLabel').innerText = videoDelayInput.value;
-					break;
-				case storageKeys.video.enabled:
-					videoEnabledInput.checked = options[storageKeys.video.enabled];
-					break;
-				case storageKeys.video.loop:
-					videoLoopInput.checked = options[storageKeys.video.loop];
-					break;
-				case storageKeys.video.volume:
-					videoVolumeInput.value = options[storageKeys.video.volume];
-					document.getElementById('videoVolumeValueLabel').innerText = videoVolumeInput.value;
-					break;
-			}
+async function checkVideo() {
+	const OPTIONS = await browser.storage.sync.get(Object.values(storageKeys.video));
+	const KEYS = Object.keys(OPTIONS);
+	for (let i = 0; i < KEYS.length; i++) {
+		switch (KEYS[i]) {
+			case storageKeys.video.aspectRatio:
+				VIDEO_ASPECT_RATIO_INPUT.value = OPTIONS[storageKeys.video.aspectRatio];
+				VIDEO_ASPECT_RATIO_VALUE_LABEL.innerText = VIDEO_ASPECT_RATIO_INPUT.value;
+				break;
+			case storageKeys.video.autoplay:
+				VIDEO_AUTOPLAY_INPUT.checked = OPTIONS[storageKeys.video.autoplay];
+				break;
+			case storageKeys.video.delay:
+				VIDEO_DELAY_INPUT.value = OPTIONS[storageKeys.video.delay];
+				VIDEO_DELAY_VALUE_LABEL.innerText = VIDEO_DELAY_INPUT.value;
+				break;
+			case storageKeys.video.enabled:
+				VIDEO_ENABLED_INPUT.checked = OPTIONS[storageKeys.video.enabled];
+				break;
+			case storageKeys.video.loop:
+				VIDEO_LOOP_INPUT.checked = OPTIONS[storageKeys.video.loop];
+				break;
+			case storageKeys.video.volume:
+				VIDEO_VOLUME_INPUT.value = OPTIONS[storageKeys.video.volume];
+				VIDEO_VOLUME_VALUE_LABEL.innerText = VIDEO_VOLUME_INPUT.value;
+				break;
 		}
-	});
+	}
 }
 
 function initializeOptions() {
@@ -366,17 +420,17 @@ function initializeOptions() {
 }
 
 function initializeValueLabels() {
-	document.getElementById('refreshingIntervalValueLabel').innerText = defaultValues.refreshing.interval;
-	document.getElementById('audioAspectRatioValueLabel').innerText = defaultValues.audio.aspectRatio;
-	document.getElementById('audioDelayValueLabel').innerText = defaultValues.audio.delay;
-	document.getElementById('audioVolumeValueLabel').innerText = defaultValues.audio.volume;
-	document.getElementById('imageAspectRatioValueLabel').innerText = defaultValues.image.aspectRatio;
-	document.getElementById('imageBorderWidthValueLabel').innerText = defaultValues.image.borderWidth;
-	document.getElementById('imageDelayValueLabel').innerText = defaultValues.image.delay;
-	document.getElementById('pdfAspectRatioValueLabel').innerText = defaultValues.pdf.aspectRatio;
-	document.getElementById('pdfBorderWidthValueLabel').innerText = defaultValues.pdf.borderWidth;
-	document.getElementById('pdfDelayValueLabel').innerText = defaultValues.pdf.delay;
-	document.getElementById('videoAspectRatioValueLabel').innerText = defaultValues.video.aspectRatio;
-	document.getElementById('videoDelayValueLabel').innerText = defaultValues.video.delay;
-	document.getElementById('videoVolumeValueLabel').innerText = defaultValues.video.volume;
+	REFRESHING_INTERVAL_VALUE_LABEL.innerText = defaultValues.refreshing.interval;
+	AUDIO_ASPECT_RATIO_VALUE_LABEL.innerText = defaultValues.audio.aspectRatio;
+	AUDIO_DELAY_VALUE_LABEL.innerText = defaultValues.audio.delay;
+	AUDIO_VOLUME_VALUE_LABEL.innerText = defaultValues.audio.volume;
+	IMAGE_ASPECT_RATIO_VALUE_LABEL.innerText = defaultValues.image.aspectRatio;
+	IMAGE_BORDER_WIDTH_VALUE_LABEL.innerText = defaultValues.image.borderWidth;
+	IMAGE_DELAY_VALUE_LABEL.innerText = defaultValues.image.delay;
+	PDF_ASPECT_RATIO_VALUE_LABEL.innerText = defaultValues.pdf.aspectRatio;
+	PDF_BORDER_WIDTH_VALUE_LABEL.innerText = defaultValues.pdf.borderWidth;
+	PDF_DELAY_VALUE_LABEL.innerText = defaultValues.pdf.delay;
+	VIDEO_ASPECT_RATIO_VALUE_LABEL.innerText = defaultValues.video.aspectRatio;
+	VIDEO_DELAY_VALUE_LABEL.innerText = defaultValues.video.delay;
+	VIDEO_VOLUME_VALUE_LABEL.innerText = defaultValues.video.volume;
 }

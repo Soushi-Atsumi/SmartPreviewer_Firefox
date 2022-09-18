@@ -135,7 +135,7 @@
 	},
 
 	"tutorialImage1": {
-		"message": "An image is displayed when you put a cursor on a link of 'gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png' and 'svg'."
+		"message": "An image is displayed when you put a cursor on a link of 'bmp', 'gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png', 'svg' and 'webp'."
 	},
 
 	"tutorialImage2": {

@@ -11,218 +11,215 @@
  */
 'use strict';
 
-var storageKeys;
-var defaultValues;
-var latestMousePositionX = 0;
-var latestMousePositionY = 0;
-const contentState = { loading: 0, loaded: 1, error: 2 };
-var modifiedHyperlinks = [];
+let storageKeys;
+let defaultValues;
+const BASE_PATH = '/_values';
+const DEFAULT_VALUES_JSON_PATH = browser.runtime.getURL(`${BASE_PATH}/defaultValues.json`);
+const STORAGE_KEYS_JSON_PATH = browser.runtime.getURL(`${BASE_PATH}/storageKeys.json`);
+let latestMousePositionX = 0;
+let latestMousePositionY = 0;
+const CONTENT_STATE = { loading: 0, loaded: 1, error: 2 };
+let modifiedHyperlinks = [];
 
 //Refreshing
-var refreshingIsEnabled;
-var refreshingInterval;
+let refreshingIsEnabled;
+let refreshingInterval;
 
 //Audio
-const floatingAudio = document.createElement('audio');
-var floatingAudioAspectRatio;
-const floatingAudioDefaultHeight = 40;
-var floatingAudioIsEnabled;
-var floatingAudioTimeoutID = 0;
-var floatingAudioTimeout;
-const audioExtensions = ['aac', 'flac', 'm4a', 'mp3', 'ogg', 'wav'];
-const regexAudio = new RegExp(`https?:\\/\\/.*\\/.*\\.(${audioExtensions.join('|')})`, 'i');
-const regexAudioRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${audioExtensions.join('|')})`, 'i');
-const audioMouseEnterEventListener = function audioMouseEnterEventListener(event) {
+const FLOATING_AUDIO = document.createElement('audio');
+let floatingAudioAspectRatio;
+const FLOATING_AUDIO_DEFAULT_HEIGHT = 40;
+let floatingAudioIsEnabled;
+let floatingAudioTimeoutID = 0;
+let floatingAudioTimeout;
+const AUDIO_EXTENSIONS = ['aac', 'flac', 'm4a', 'mp3', 'ogg', 'wav'];
+const REGEX_AUDIO = new RegExp(`https?:\\/\\/.*\\/.*\\.(${AUDIO_EXTENSIONS.join('|')})`, 'i');
+const REGEX_AUDIO_REPEATING = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${AUDIO_EXTENSIONS.join('|')})`, 'i');
+const AUDIO_MOUSE_ENTER_EVENT_LISTENER = event => {
 	if (!event.shiftKey) {
 		window.clearTimeout(floatingAudioTimeoutID);
-		floatingAudioTimeoutID = window.setTimeout(function () {
+		floatingAudioTimeoutID = window.setTimeout(() => {
 			let targetHref = event.target.href;
 			latestMousePositionX = event.clientX;
 			latestMousePositionY = event.clientY;
 
-			if (targetHref.match(regexAudio) === null) {
-				floatingAudio.removeAttribute('src');
-			} else if (targetHref.match(regexAudioRepeating) === null) {
-				floatingAudio.setAttribute('src', targetHref.match(regexAudio)[0]);
+			if (targetHref.match(REGEX_AUDIO) === null) {
+				FLOATING_AUDIO.removeAttribute('src');
+			} else if (targetHref.match(REGEX_AUDIO_REPEATING) === null) {
+				FLOATING_AUDIO.setAttribute('src', targetHref.match(REGEX_AUDIO)[0]);
 			} else {
-				let result = targetHref.match(regexAudioRepeating);
+				let result = targetHref.match(REGEX_AUDIO_REPEATING);
 				while (result !== null) {
-					targetHref = result[0].match(regexAudio)[0];
-					result = targetHref.match(regexAudioRepeating);
+					targetHref = result[0].match(REGEX_AUDIO)[0];
+					result = targetHref.match(REGEX_AUDIO_REPEATING);
 				}
 
-				floatingAudio.setAttribute('src', targetHref);
+				FLOATING_AUDIO.setAttribute('src', targetHref);
 			}
 
-			if (floatingAudio.getAttribute('src') !== '') {
+			if (FLOATING_AUDIO.getAttribute('src') !== '') {
 				setFloatingAudioSize();
 				setFloatingAudioFromMousePosition(latestMousePositionX, latestMousePositionY);
-				floatingAudio.style.display = 'inline-block';
+				FLOATING_AUDIO.style.display = 'inline-block';
 				return;
 			}
 		}, floatingAudioTimeout);
 	}
 };
-const audioMouseLeaveEventListener = function audioMouseLeaveEventListener() { window.clearTimeout(floatingAudioTimeoutID); };
+const AUDIO_MOUSE_LEAVE_EVENT_LISTENER = () => window.clearTimeout(floatingAudioTimeoutID);
 
 //Image
-const floatingImage = document.createElement('img');
-var floatingImageAspectRatio;
-var floatingImageIntervalID = 0;
-var floatingImageIsEnabled;
-var floatingImageStyleBorderWidth;
-var floatingImageTimeoutID = 0;
-var floatingImageTimeout;
-const imageExtensions = ['gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png', 'svg'];
-const regexImage = new RegExp(`https?:\\/\\/.*\\/.*\\.(${imageExtensions.join('|')})`, 'i');
-const regexImageRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${imageExtensions.join('|')})`, 'i');
-const imageMouseEnterEventListener = function imageMouseEnterEventListener(event) {
+const FLOATING_IMAGE = document.createElement('img');
+let floatingImageAspectRatio;
+let floatingImageIntervalID = 0;
+let floatingImageIsEnabled;
+let floatingImageStyleBorderWidth;
+let floatingImageTimeoutID = 0;
+let floatingImageTimeout;
+const IMAGE_EXTENSIONS = ['bmp', 'gif', 'gifv', 'ico', 'jpeg', 'jpg', 'png', 'svg', 'webp'];
+const REGEX_IMAGE = new RegExp(`https?:\\/\\/.*\\/.*\\.(${IMAGE_EXTENSIONS.join('|')})`, 'i');
+const REGEX_IMAGE_REPEATING = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${IMAGE_EXTENSIONS.join('|')})`, 'i');
+const IMAGE_MOUSE_ENTER_EVENT_LISTENER = event => {
 	if (!event.shiftKey) {
 		window.clearTimeout(floatingImageTimeoutID);
-		floatingImageTimeoutID = window.setTimeout(function () {
+		floatingImageTimeoutID = window.setTimeout(() => {
 			let targetHref = event.target.href;
 			latestMousePositionX = event.clientX;
 			latestMousePositionY = event.clientY;
 
-			if (targetHref.match(regexImage) === null) {
-				floatingImage.removeAttribute('src');
-			} else if (targetHref.match(regexImageRepeating) === null) {
-				floatingImage.setAttribute('src', targetHref.match(regexImage)[0]);
+			if (targetHref.match(REGEX_IMAGE) === null) {
+				FLOATING_IMAGE.removeAttribute('src');
+			} else if (targetHref.match(REGEX_IMAGE_REPEATING) === null) {
+				FLOATING_IMAGE.setAttribute('src', targetHref.match(REGEX_IMAGE)[0]);
 			} else {
-				let result = targetHref.match(regexImageRepeating);
+				let result = targetHref.match(REGEX_IMAGE_REPEATING);
 				while (result !== null) {
-					targetHref = result[0].match(regexImage)[0];
-					result = targetHref.match(regexImageRepeating);
+					targetHref = result[0].match(REGEX_IMAGE)[0];
+					result = targetHref.match(REGEX_IMAGE_REPEATING);
 				}
 
-				floatingImage.setAttribute('src', targetHref);
+				FLOATING_IMAGE.setAttribute('src', targetHref);
 			}
 
-			if (floatingImage.getAttribute('src') !== '') {
+			if (FLOATING_IMAGE.getAttribute('src') !== '') {
 				setFloatingImageFromMousePosition(latestMousePositionX, latestMousePositionY);
-				toggleFloatingImageBorderColor(contentState.loading);
-				floatingImage.style.display = 'inline-block';
+				toggleFloatingImageBorderColor(CONTENT_STATE.loading);
+				FLOATING_IMAGE.style.display = 'inline-block';
 				return;
 			}
 		}, floatingImageTimeout);
 	}
 };
-const imageMouseLeaveEventListener = function imageMouseLeaveEventListener() { window.clearTimeout(floatingImageTimeoutID); };
+const IMAGE_MOUSE_LEAVE_EVENT_LISTENER = () => window.clearTimeout(floatingImageTimeoutID);
 
 //PDF
-const floatingPDF = document.createElement('iframe');
-var floatingPDFAspectRatio;
-var floatingPDFIntervalID = 0;
-var floatingPDFIsEnabled;
-var floatingPDFStyleBorderWidth;
-var floatingPDFTimeoutID = 0;
-var floatingPDFTimeout;
-const pdfExtensions = ['pdf'];
-const regexPDF = new RegExp(`https?:\\/\\/.*\\/.*\\.(${pdfExtensions.join('|')})`, 'i');
-const regexPDFRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${pdfExtensions.join('|')})`, 'i');
-const pdfMouseEnterEventListener = function pdfMouseEnterEventListener(event) {
+const FLOATING_PDF = document.createElement('iframe');
+let floatingPDFAspectRatio;
+let floatingPDFIntervalID = 0;
+let floatingPDFIsEnabled;
+let floatingPDFStyleBorderWidth;
+let floatingPDFTimeoutID = 0;
+let floatingPDFTimeout;
+const PDF_EXTENSIONS = ['pdf'];
+const REGEX_PDF = new RegExp(`https?:\\/\\/.*\\/.*\\.(${PDF_EXTENSIONS.join('|')})`, 'i');
+const REGEX_PDF_REPEATING = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${PDF_EXTENSIONS.join('|')})`, 'i');
+const PDF_MOUSE_ENTER_EVENT_LISTENER = event => {
 	if (!event.shiftKey) {
 		window.clearTimeout(floatingPDFTimeoutID);
-		floatingPDFTimeoutID = window.setTimeout(function () {
+		floatingPDFTimeoutID = window.setTimeout(() => {
 			let targetHref = event.target.href;
 			latestMousePositionX = event.clientX;
 			latestMousePositionY = event.clientY;
 
-			if (targetHref.match(regexPDF) === null) {
-				floatingPDF.removeAttribute('src');
-			} else if (targetHref.match(regexPDFRepeating) === null) {
-				floatingPDF.setAttribute('src', targetHref.match(regexPDF)[0]);
+			if (targetHref.match(REGEX_PDF) === null) {
+				FLOATING_PDF.removeAttribute('src');
+			} else if (targetHref.match(REGEX_PDF_REPEATING) === null) {
+				FLOATING_PDF.setAttribute('src', targetHref.match(REGEX_PDF)[0]);
 			} else {
-				let result = targetHref.match(regexPDFRepeating);
+				let result = targetHref.match(REGEX_PDF_REPEATING);
 				while (result !== null) {
-					targetHref = result[0].match(regexPDF)[0];
-					result = targetHref.match(regexPDFRepeating);
+					targetHref = result[0].match(REGEX_PDF)[0];
+					result = targetHref.match(REGEX_PDF_REPEATING);
 				}
 
-				floatingPDF.setAttribute('src', targetHref);
+				FLOATING_PDF.setAttribute('src', targetHref);
 			}
 
-			if (floatingPDF.getAttribute('src') !== '') {
+			if (FLOATING_PDF.getAttribute('src') !== '') {
 				setFloatingPDFFromMousePosition(latestMousePositionX, latestMousePositionY);
-				toggleFloatingPDFBorderColor(contentState.loading);
-				floatingPDF.style.display = 'inline-block';
+				toggleFloatingPDFBorderColor(CONTENT_STATE.loading);
+				FLOATING_PDF.style.display = 'inline-block';
 				return;
 			}
 		}, floatingPDFTimeout);
 	}
 };
-const pdfMouseLeaveEventListener = function pdfMouseLeaveEventListener() { window.clearTimeout(floatingPDFTimeoutID); };
+const PDF_MOUSE_LEAVE_EVENT_LISTENER = () => window.clearTimeout(floatingPDFTimeoutID);
 
 //Video
-const floatingVideo = document.createElement('video');
-var floatingVideoAspectRatio;
-var floatingVideoIsEnabled;
-var floatingVideoTimeoutID = 0;
-var floatingVideoTimeout;
-const videoExtensions = ['mov', 'mp4', 'webm', 'wmv'];
-const regexVideo = new RegExp(`https?:\\/\\/.*\\/.*\\.(${videoExtensions.join('|')})`, 'i');
-const regexVideoRepeating = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${videoExtensions.join('|')})`, 'i');
-const videoMouseEnterEventListener = function videoMouseEnterEventListener(event) {
+const FLOATING_VIDEO = document.createElement('video');
+let floatingVideoAspectRatio;
+let floatingVideoIsEnabled;
+let floatingVideoTimeoutID = 0;
+let floatingVideoTimeout;
+const VIDEO_EXTENSIONS = ['mov', 'mp4', 'webm', 'wmv'];
+const REGEX_VIDEO = new RegExp(`https?:\\/\\/.*\\/.*\\.(${VIDEO_EXTENSIONS.join('|')})`, 'i');
+const REGEX_VIDEO_REPEATING = new RegExp(`.https?:\\/\\/.*\\/.*\\.(${VIDEO_EXTENSIONS.join('|')})`, 'i');
+const VIDEO_MOUSE_ENTER_EVENT_LISTENER = event => {
 	if (!event.shiftKey) {
 		window.clearTimeout(floatingVideoTimeoutID);
-		floatingVideoTimeoutID = window.setTimeout(function () {
+		floatingVideoTimeoutID = window.setTimeout(() => {
 			let targetHref = event.target.href;
 			latestMousePositionX = event.clientX;
 			latestMousePositionY = event.clientY;
 
-			if (targetHref.match(regexVideo) === null) {
-				floatingVideo.removeAttribute('src');
-			} else if (targetHref.match(regexVideoRepeating) === null) {
-				floatingVideo.setAttribute('src', targetHref.match(regexVideo)[0]);
+			if (targetHref.match(REGEX_VIDEO) === null) {
+				FLOATING_VIDEO.removeAttribute('src');
+			} else if (targetHref.match(REGEX_VIDEO_REPEATING) === null) {
+				FLOATING_VIDEO.setAttribute('src', targetHref.match(REGEX_VIDEO)[0]);
 			} else {
-				let result = targetHref.match(regexVideoRepeating);
+				let result = targetHref.match(REGEX_VIDEO_REPEATING);
 				while (result !== null) {
-					targetHref = result[0].match(regexVideo)[0];
-					result = targetHref.match(regexVideoRepeating);
+					targetHref = result[0].match(REGEX_VIDEO)[0];
+					result = targetHref.match(REGEX_VIDEO_REPEATING);
 				}
 
-				floatingVideo.setAttribute('src', targetHref);
+				FLOATING_VIDEO.setAttribute('src', targetHref);
 			}
 
-			if (floatingVideo.getAttribute('src') !== '') {
+			if (FLOATING_VIDEO.getAttribute('src') !== '') {
 				setFloatingVideoFromMousePosition(latestMousePositionX, latestMousePositionY);
-				floatingVideo.style.display = 'inline-block';
+				FLOATING_VIDEO.style.display = 'inline-block';
 				return;
 			}
 		}, floatingVideoTimeout);
 	}
 };
-const videoMouseLeaveEventListener = function videoMouseLeaveEventListener() { window.clearTimeout(floatingVideoTimeoutID); };
+const VIDEO_MOUSE_LEAVE_EVENT_LISTENER = () => window.clearTimeout(floatingVideoTimeoutID);
 
 main();
 
-function main() {
-	readDefaultValues().then(() => {
-		if (defaultValues !== undefined) {
-			initializeRefreshing();
-			initializeAudio();
-			initializeImage();
-			initializePDF();
-			initializeVideo();
-			overrideOptions().then(() => {
-				//Audio
-				floatingAudioIsEnabled && document.body.appendChild(floatingAudio);
-				//Image
-				floatingImageIsEnabled && document.body.appendChild(floatingImage);
-				//PDF
-				floatingPDFIsEnabled && document.body.appendChild(floatingPDF);
-				//Video
-				floatingVideoIsEnabled && document.body.appendChild(floatingVideo);
+async function main() {
+	defaultValues = await (await fetch(DEFAULT_VALUES_JSON_PATH)).json();
+	initializeRefreshing();
+	initializeAudio();
+	initializeImage();
+	initializePDF();
+	initializeVideo();
+	await overrideOptions();
+	//Audio
+	floatingAudioIsEnabled && document.body.appendChild(FLOATING_AUDIO);
+	//Image
+	floatingImageIsEnabled && document.body.appendChild(FLOATING_IMAGE);
+	//PDF
+	floatingPDFIsEnabled && document.body.appendChild(FLOATING_PDF);
+	//Video
+	floatingVideoIsEnabled && document.body.appendChild(FLOATING_VIDEO);
 
-				addPreviewers();
-				if (refreshingIsEnabled) {
-					window.setInterval(() => {
-						addPreviewers();
-					}, refreshingInterval);
-				}
-			});
-		}
-	});
+	addPreviewers();
+	if (refreshingIsEnabled) {
+		window.setInterval(() => addPreviewers(), refreshingInterval);
+	}
 }
 
 function initializeRefreshing() {
@@ -231,39 +228,40 @@ function initializeRefreshing() {
 }
 
 function initializeAudio() {
-	floatingAudio.autoplay = defaultValues.audio.autoplay;
-	floatingAudio.controls = true;
-	floatingAudio.id = 'floatingAudio';
-	floatingAudio.loop = defaultValues.audio.loop;
-	floatingAudio.style.display = 'none';
-	floatingAudio.style.height = `${floatingAudioDefaultHeight}px`;
-	floatingAudio.style.position = 'fixed';
-	floatingAudio.style.zIndex = 2147483647;
-	floatingAudio.volume = defaultValues.audio.volume;
+	FLOATING_AUDIO.autoplay = defaultValues.audio.autoplay;
+	FLOATING_AUDIO.controls = true;
+	FLOATING_AUDIO.id = 'floatingAudio';
+	FLOATING_AUDIO.loop = defaultValues.audio.loop;
+	FLOATING_AUDIO.style.display = 'none';
+	FLOATING_AUDIO.style.height = `${FLOATING_AUDIO_DEFAULT_HEIGHT}px`;
+	FLOATING_AUDIO.style.position = 'fixed';
+	FLOATING_AUDIO.style.visibility = 'visible';
+	FLOATING_AUDIO.style.zIndex = 2147483647;
+	FLOATING_AUDIO.volume = defaultValues.audio.volume;
 	floatingAudioAspectRatio = defaultValues.audio.aspectRatio;
 	floatingAudioIsEnabled = defaultValues.audio.enabled;
 	floatingAudioTimeout = defaultValues.audio.delay;
 
-	floatingAudio.addEventListener('loadedmetadata', () => {
+	FLOATING_AUDIO.addEventListener('loadedmetadata', () => {
 		setFloatingAudioSize(floatingAudioAspectRatio);
 		setFloatingAudioFromMousePosition(latestMousePositionX, latestMousePositionY);
 	});
 
-	floatingAudio.addEventListener('mouseout', (event) => {
-		if (floatingAudio.offsetHeight + floatingAudio.offsetTop <= event.clientY | floatingAudio.offsetLeft >= event.clientX | floatingAudio.offsetLeft + floatingAudio.offsetWidth <= event.clientX | floatingAudio.offsetTop >= event.clientY) {
-			floatingAudio.style.display = "none";
-			floatingAudio.removeAttribute('src');
-			floatingAudio.pause();
+	FLOATING_AUDIO.addEventListener('mouseout', event => {
+		if (FLOATING_AUDIO.offsetHeight + FLOATING_AUDIO.offsetTop <= event.clientY | FLOATING_AUDIO.offsetLeft >= event.clientX | FLOATING_AUDIO.offsetLeft + FLOATING_AUDIO.offsetWidth <= event.clientX | FLOATING_AUDIO.offsetTop >= event.clientY) {
+			FLOATING_AUDIO.style.display = "none";
+			FLOATING_AUDIO.removeAttribute('src');
+			FLOATING_AUDIO.pause();
 		}
 	});
 
-	floatingAudio.addEventListener('wheel', (event) => {
+	FLOATING_AUDIO.addEventListener('wheel', event => {
 		let floatingAudioWidthMagnification;
 
 		if (event.deltaY > 0) {
-			floatingAudioWidthMagnification = floatingAudio.clientWidth / window.innerWidth - 0.1;
+			floatingAudioWidthMagnification = FLOATING_AUDIO.clientWidth / window.innerWidth - 0.1;
 		} else {
-			floatingAudioWidthMagnification = floatingAudio.clientWidth / window.innerWidth + 0.1;
+			floatingAudioWidthMagnification = FLOATING_AUDIO.clientWidth / window.innerWidth + 0.1;
 		}
 
 		if (floatingAudioWidthMagnification > 0 && floatingAudioWidthMagnification < 1) {
@@ -275,66 +273,67 @@ function initializeAudio() {
 }
 
 function initializeImage() {
-	const floatingImageDefaultHeight = 100;
-	const floatingImageDefaultWidth = 100;
+	const FLOATING_IMAGE_DEFAULT_HEIGHT = '100px';
+	const FLOATING_IMAGE_DEFAULT_WIDTH = '100px';
 	floatingImageStyleBorderWidth = defaultValues.image.borderWidth;
-	floatingImage.id = 'floatingImage';
-	floatingImage.height = floatingImageDefaultHeight;
-	floatingImage.style.borderStyle = `solid`;
-	floatingImage.style.borderWidth = `${floatingImageStyleBorderWidth}px`;
-	floatingImage.style.display = 'none';
-	floatingImage.style.position = 'fixed';
-	floatingImage.style.zIndex = 2147483647;
-	floatingImage.width = floatingImageDefaultWidth;
+	FLOATING_IMAGE.id = 'floatingImage';
+	FLOATING_IMAGE.style.borderStyle = `solid`;
+	FLOATING_IMAGE.style.borderWidth = `${floatingImageStyleBorderWidth}px`;
+	FLOATING_IMAGE.style.display = 'none';
+	FLOATING_IMAGE.style.height = FLOATING_IMAGE_DEFAULT_HEIGHT;
+	FLOATING_IMAGE.style.position = 'fixed';
+	FLOATING_IMAGE.style.visibility = 'visible';
+	FLOATING_IMAGE.style.width = FLOATING_IMAGE_DEFAULT_WIDTH;
+	FLOATING_IMAGE.style.zIndex = 2147483647;
 	floatingImageAspectRatio = defaultValues.image.aspectRatio;
 	floatingImageIsEnabled = defaultValues.image.enabled;
 	floatingImageTimeout = defaultValues.image.delay;
 
-	floatingImage.addEventListener('click', (event) => {
+	FLOATING_IMAGE.addEventListener('click', event => {
 		if (event.button === 0) {
 			if (event.ctrlKey) {
-				window.open(floatingImage.getAttribute('src'));
+				window.open(FLOATING_IMAGE.getAttribute('src'));
 			} else {
-				floatingImage.style.display = "none";
+				FLOATING_IMAGE.style.display = "none";
 			}
 		}
 	});
 
-	floatingImage.addEventListener('error', (reason) => {
-		if (floatingImage.getAttribute('src') !== '') {
-			toggleFloatingImageBorderColor(contentState.error);
+	FLOATING_IMAGE.addEventListener('error', () => {
+		if (FLOATING_IMAGE.getAttribute('src') !== '') {
+			toggleFloatingImageBorderColor(CONTENT_STATE.error);
 		}
 	});
 
-	floatingImage.addEventListener('load', () => {
+	FLOATING_IMAGE.addEventListener('load', () => {
 		setFloatingImageSize(floatingImageAspectRatio, floatingImageAspectRatio);
 		setFloatingImageFromMousePosition(latestMousePositionX, latestMousePositionY);
-		toggleFloatingImageBorderColor(contentState.loaded);
+		toggleFloatingImageBorderColor(CONTENT_STATE.loaded);
 	});
 
-	floatingImage.addEventListener('mouseout', (event) => {
-		if (floatingImage.offsetHeight + floatingImage.offsetTop <= event.clientY | floatingImage.offsetLeft >= event.clientX | floatingImage.offsetLeft + floatingImage.offsetWidth <= event.clientX | floatingImage.offsetTop >= event.clientY) {
-			floatingImage.removeAttribute('src');
-			floatingImage.style.display = "none";
-			floatingImage.height = floatingImageDefaultHeight;
-			floatingImage.width = floatingImageDefaultWidth;
-			toggleFloatingImageBorderColor(contentState.loaded);
+	FLOATING_IMAGE.addEventListener('mouseout', event => {
+		if (FLOATING_IMAGE.offsetHeight + FLOATING_IMAGE.offsetTop <= event.clientY | FLOATING_IMAGE.offsetLeft >= event.clientX | FLOATING_IMAGE.offsetLeft + FLOATING_IMAGE.offsetWidth <= event.clientX | FLOATING_IMAGE.offsetTop >= event.clientY) {
+			FLOATING_IMAGE.removeAttribute('src');
+			FLOATING_IMAGE.style.display = "none";
+			FLOATING_IMAGE.style.height = FLOATING_IMAGE_DEFAULT_HEIGHT;
+			FLOATING_IMAGE.style.width = FLOATING_IMAGE_DEFAULT_WIDTH;
+			toggleFloatingImageBorderColor(CONTENT_STATE.loaded);
 		}
 	});
 
-	floatingImage.addEventListener('wheel', (event) => {
+	FLOATING_IMAGE.addEventListener('wheel', event => {
 		let floatingImageHeightMagnification;
 		let floatingImageWidthMagnification;
 
 		if (event.deltaY > 0) {
-			floatingImageHeightMagnification = floatingImage.clientHeight / window.innerHeight - 0.1;
-			floatingImageWidthMagnification = floatingImage.clientWidth / window.innerWidth - 0.1;
+			floatingImageHeightMagnification = FLOATING_IMAGE.clientHeight / window.innerHeight - 0.1;
+			floatingImageWidthMagnification = FLOATING_IMAGE.clientWidth / window.innerWidth - 0.1;
 		} else {
-			floatingImageHeightMagnification = floatingImage.clientHeight / window.innerHeight + 0.1;
-			floatingImageWidthMagnification = floatingImage.clientWidth / window.innerWidth + 0.1;
+			floatingImageHeightMagnification = FLOATING_IMAGE.clientHeight / window.innerHeight + 0.1;
+			floatingImageWidthMagnification = FLOATING_IMAGE.clientWidth / window.innerWidth + 0.1;
 		}
 
-		if (floatingImageHeightMagnification > 0 && floatingImageWidthMagnification > 0 && floatingImageHeightMagnification < 1 && floatingImageWidthMagnification < 1) {
+		if ((floatingImageHeightMagnification > 0 || floatingImageWidthMagnification > 0) && floatingImageHeightMagnification < 1 && floatingImageWidthMagnification < 1) {
 			setFloatingImageSize(floatingImageHeightMagnification, floatingImageWidthMagnification);
 			setFloatingImageFromMousePosition(latestMousePositionX, latestMousePositionY);
 		}
@@ -343,112 +342,98 @@ function initializeImage() {
 }
 
 function initializePDF() {
-	const floatingPDFDefaultHeight = 100;
-	const floatingPDFDefaultWidth = 100;
+	const FLOATING_PDF_DEFAULT_HEIGHT = '100px';
+	const FLOATING_PDF_DEFAULT_WIDTH = '100px';
 	floatingPDFStyleBorderWidth = defaultValues.pdf.borderWidth;
-	floatingPDF.id = 'floatingPDF';
-	floatingPDF.height = floatingPDFDefaultHeight;
-	floatingPDF.style.background = 'rgba(0, 0, 0, 0)';
-	floatingPDF.style.borderStyle = `solid`;
-	floatingPDF.style.borderWidth = `${floatingPDFStyleBorderWidth}px`;
-	floatingPDF.style.display = 'none';
-	floatingPDF.style.position = 'fixed';
-	floatingPDF.style.zIndex = 2147483647;
-	floatingPDF.width = floatingPDFDefaultWidth;
+	FLOATING_PDF.id = 'floatingPDF';
+	FLOATING_PDF.style.background = 'rgba(0, 0, 0, 0)';
+	FLOATING_PDF.style.borderStyle = `solid`;
+	FLOATING_PDF.style.borderWidth = `${floatingPDFStyleBorderWidth}px`;
+	FLOATING_PDF.style.display = 'none';
+	FLOATING_PDF.style.height = FLOATING_PDF_DEFAULT_HEIGHT;
+	FLOATING_PDF.style.position = 'fixed';
+	FLOATING_PDF.style.visibility = 'visible';
+	FLOATING_PDF.style.width = FLOATING_PDF_DEFAULT_WIDTH;
+	FLOATING_PDF.style.zIndex = 2147483647;
 	floatingPDFAspectRatio = defaultValues.pdf.aspectRatio;
 	floatingPDFIsEnabled = defaultValues.pdf.enabled;
 	floatingPDFTimeout = defaultValues.pdf.delay;
 
-	floatingPDF.addEventListener('click', () => {
-		window.open(floatingPDF.getAttribute('src'));
-	});
+	FLOATING_PDF.addEventListener('click', () => window.open(FLOATING_PDF.getAttribute('src')));
 
-	floatingPDF.addEventListener('error', () => {
-		if (floatingPDF.getAttribute('src') !== '') {
-			toggleFloatingPDFBorderColor(contentState.error);
+	FLOATING_PDF.addEventListener('error', () => {
+		if (FLOATING_PDF.getAttribute('src') !== '') {
+			toggleFloatingPDFBorderColor(CONTENT_STATE.error);
 		}
 	});
 
-	floatingPDF.addEventListener('load', () => {
-		if (floatingPDF.getAttribute('src') !== '') {
+	FLOATING_PDF.addEventListener('load', () => {
+		if (FLOATING_PDF.getAttribute('src') !== '') {
 			setFloatingPDFSize(floatingPDFAspectRatio, floatingPDFAspectRatio);
 			setFloatingPDFFromMousePosition(latestMousePositionX, latestMousePositionY);
-			toggleFloatingPDFBorderColor(contentState.loaded);
+			toggleFloatingPDFBorderColor(CONTENT_STATE.loaded);
 		}
 	});
 
-	floatingPDF.addEventListener('mouseout', (event) => {
-		if (floatingPDF.offsetHeight + floatingPDF.offsetTop <= event.clientY | floatingPDF.offsetLeft >= event.clientX | floatingPDF.offsetLeft + floatingPDF.offsetWidth <= event.clientX | floatingPDF.offsetTop >= event.clientY) {
-			floatingPDF.height = floatingPDFDefaultHeight;
-			floatingPDF.removeAttribute('src');
-			floatingPDF.style.display = "none";
-			floatingPDF.width = floatingPDFDefaultWidth;
-			toggleFloatingPDFBorderColor(contentState.loaded);
+	FLOATING_PDF.addEventListener('mouseout', event => {
+		if (FLOATING_PDF.offsetHeight + FLOATING_PDF.offsetTop <= event.clientY | FLOATING_PDF.offsetLeft >= event.clientX | FLOATING_PDF.offsetLeft + FLOATING_PDF.offsetWidth <= event.clientX | FLOATING_PDF.offsetTop >= event.clientY) {
+			FLOATING_PDF.removeAttribute('src');
+			FLOATING_PDF.style.height = FLOATING_PDF_DEFAULT_HEIGHT;
+			FLOATING_PDF.style.display = "none";
+			FLOATING_PDF.style.width = FLOATING_PDF_DEFAULT_WIDTH;
+			toggleFloatingPDFBorderColor(CONTENT_STATE.loaded);
 		}
 	});
 }
 
 function initializeVideo() {
-	const floatingVideoDefaultHeight = 90;
-	const floatingVideoDefaultWidth = 160;
-	floatingVideo.autoplay = defaultValues.video.autoplay;
-	floatingVideo.controls = true;
-	floatingVideo.height = floatingVideoDefaultHeight;
-	floatingVideo.id = 'floatingVideo';
-	floatingVideo.loop = defaultValues.video.loop;
-	floatingVideo.style.display = 'none';
-	floatingVideo.style.position = 'fixed';
-	floatingVideo.style.zIndex = 2147483647;
-	floatingVideo.volume = defaultValues.video.volume;
-	floatingVideo.width = floatingVideoDefaultWidth;
+	const FLOATING_VIDEO_DEFAULT_HEIGHT = '90px';
+	const FLOATING_VIDEO_DEFAULT_WIDTH = '160px';
+	FLOATING_VIDEO.autoplay = defaultValues.video.autoplay;
+	FLOATING_VIDEO.controls = true;
+	FLOATING_VIDEO.id = 'floatingVideo';
+	FLOATING_VIDEO.loop = defaultValues.video.loop;
+	FLOATING_VIDEO.style.display = 'none';
+	FLOATING_VIDEO.style.height = FLOATING_VIDEO_DEFAULT_HEIGHT;
+	FLOATING_VIDEO.style.position = 'fixed';
+	FLOATING_VIDEO.style.visibility = 'visible';
+	FLOATING_VIDEO.style.width = FLOATING_VIDEO_DEFAULT_WIDTH;
+	FLOATING_VIDEO.style.zIndex = 2147483647;
+	FLOATING_VIDEO.volume = defaultValues.video.volume;
 	floatingVideoAspectRatio = defaultValues.video.aspectRatio;
 	floatingVideoIsEnabled = defaultValues.video.enabled;
 	floatingVideoTimeout = defaultValues.video.delay;
 
-	floatingVideo.addEventListener('loadedmetadata', () => {
+	FLOATING_VIDEO.addEventListener('mouseout', event => {
+		if (document.fullscreenElement?.id !== FLOATING_VIDEO.id && FLOATING_VIDEO.offsetHeight + FLOATING_VIDEO.offsetTop <= event.clientY | FLOATING_VIDEO.offsetLeft >= event.clientX | FLOATING_VIDEO.offsetLeft + FLOATING_VIDEO.offsetWidth <= event.clientX | FLOATING_VIDEO.offsetTop >= event.clientY) {
+			FLOATING_VIDEO.style.height = FLOATING_VIDEO_DEFAULT_HEIGHT;
+			FLOATING_VIDEO.style.width = FLOATING_VIDEO_DEFAULT_WIDTH;
+			FLOATING_VIDEO.pause();
+			FLOATING_VIDEO.removeAttribute('src');
+			FLOATING_VIDEO.style.display = "none";
+		}
+	});
+
+	FLOATING_VIDEO.addEventListener('loadedmetadata', () => {
 		setFloatingVideoSize(floatingVideoAspectRatio, floatingVideoAspectRatio);
 		setFloatingVideoFromMousePosition(latestMousePositionX, latestMousePositionY);
-		floatingVideo.controls = false;
-		floatingVideo.controls = true;
+		FLOATING_VIDEO.controls = false;
+		FLOATING_VIDEO.controls = true;
 	});
 
-	floatingVideo.addEventListener('mouseout', (event) => {
-		let firefoxIsFullScreen = document.mozFullScreenElement === undefined ? false : document.mozFullScreenElement !== null && document.mozFullScreenElement.id === floatingVideo.id;
-
-		if (!firefoxIsFullScreen && floatingVideo.offsetHeight + floatingVideo.offsetTop <= event.clientY | floatingVideo.offsetLeft >= event.clientX | floatingVideo.offsetLeft + floatingVideo.offsetWidth <= event.clientX | floatingVideo.offsetTop >= event.clientY) {
-			floatingVideo.height = floatingVideoDefaultHeight;
-			floatingVideo.width = floatingVideoDefaultWidth;
-			floatingVideo.pause();
-			floatingVideo.removeAttribute('src');
-			floatingVideo.style.display = "none";
-		}
-	});
-
-	document.addEventListener('mozfullscreenchange', () => {
-		let firefoxIsFullScreen = document.mozFullScreenElement === undefined ? false : document.mozFullScreenElement !== null && document.mozFullScreenElement.id === floatingVideo.id;
-
-		if (!firefoxIsFullScreen) {
-			floatingVideo.height = floatingVideoDefaultHeight;
-			floatingVideo.width = floatingVideoDefaultWidth;
-			floatingVideo.pause();
-			floatingVideo.removeAttribute('src');
-			floatingVideo.style.display = "none";
-		}
-	});
-
-	floatingVideo.addEventListener('wheel', (event) => {
+	FLOATING_VIDEO.addEventListener('wheel', event => {
 		let floatingVideoHeightMagnification;
 		let floatingVideoWidthMagnification;
 
 		if (event.deltaY > 0) {
-			floatingVideoHeightMagnification = floatingVideo.clientHeight / window.innerHeight - 0.1;
-			floatingVideoWidthMagnification = floatingVideo.clientWidth / window.innerWidth - 0.1;
+			floatingVideoHeightMagnification = FLOATING_VIDEO.clientHeight / window.innerHeight - 0.1;
+			floatingVideoWidthMagnification = FLOATING_VIDEO.clientWidth / window.innerWidth - 0.1;
 		} else {
-			floatingVideoHeightMagnification = floatingVideo.clientHeight / window.innerHeight + 0.1;
-			floatingVideoWidthMagnification = floatingVideo.clientWidth / window.innerWidth + 0.1;
+			floatingVideoHeightMagnification = FLOATING_VIDEO.clientHeight / window.innerHeight + 0.1;
+			floatingVideoWidthMagnification = FLOATING_VIDEO.clientWidth / window.innerWidth + 0.1;
 		}
 
-		if (floatingVideoHeightMagnification > 0 && floatingVideoWidthMagnification > 0 && floatingVideoHeightMagnification < 1 && floatingVideoWidthMagnification < 1) {
+		if ((floatingVideoHeightMagnification > 0 || floatingVideoWidthMagnification > 0) && floatingVideoHeightMagnification < 1 && floatingVideoWidthMagnification < 1) {
 			setFloatingVideoSize(floatingVideoHeightMagnification, floatingVideoWidthMagnification);
 			setFloatingVideoFromMousePosition(latestMousePositionX, latestMousePositionY);
 		}
@@ -457,148 +442,148 @@ function initializeVideo() {
 }
 
 function addPreviewers() {
-	const isFirst = modifiedHyperlinks.length === 0;
-	let hyperlinks = document.getElementsByTagName('a');
+	const IS_FIRST = modifiedHyperlinks.length === 0;
+	const HYPERLINKS = document.getElementsByTagName('a');
 	let i = 0;
-	const addEvents = () => {
-		if (floatingAudioIsEnabled && regexAudio.test(hyperlinks[i].href)) {
-			hyperlinks[i].addEventListener('mouseenter', audioMouseEnterEventListener);
-			hyperlinks[i].addEventListener('mouseleave', audioMouseLeaveEventListener);
-		} else if (floatingImageIsEnabled && regexImage.test(hyperlinks[i].href)) {
-			hyperlinks[i].addEventListener('mouseenter', imageMouseEnterEventListener);
-			hyperlinks[i].addEventListener('mouseleave', imageMouseLeaveEventListener);
-		} else if (floatingPDFIsEnabled && regexPDF.test(hyperlinks[i].href)) {
-			hyperlinks[i].addEventListener('mouseenter', pdfMouseEnterEventListener);
-			hyperlinks[i].addEventListener('mouseleave', pdfMouseLeaveEventListener);
-		} else if (floatingVideoIsEnabled && regexVideo.test(hyperlinks[i].href)) {
-			hyperlinks[i].addEventListener('mouseenter', videoMouseEnterEventListener);
-			hyperlinks[i].addEventListener('mouseleave', videoMouseLeaveEventListener);
+	const ADD_EVENTS = () => {
+		if (floatingAudioIsEnabled && REGEX_AUDIO.test(HYPERLINKS[i].href)) {
+			HYPERLINKS[i].addEventListener('mouseenter', AUDIO_MOUSE_ENTER_EVENT_LISTENER);
+			HYPERLINKS[i].addEventListener('mouseleave', AUDIO_MOUSE_LEAVE_EVENT_LISTENER);
+		} else if (floatingImageIsEnabled && REGEX_IMAGE.test(HYPERLINKS[i].href)) {
+			HYPERLINKS[i].addEventListener('mouseenter', IMAGE_MOUSE_ENTER_EVENT_LISTENER);
+			HYPERLINKS[i].addEventListener('mouseleave', IMAGE_MOUSE_LEAVE_EVENT_LISTENER);
+		} else if (floatingPDFIsEnabled && REGEX_PDF.test(HYPERLINKS[i].href)) {
+			HYPERLINKS[i].addEventListener('mouseenter', PDF_MOUSE_ENTER_EVENT_LISTENER);
+			HYPERLINKS[i].addEventListener('mouseleave', PDF_MOUSE_LEAVE_EVENT_LISTENER);
+		} else if (floatingVideoIsEnabled && REGEX_VIDEO.test(HYPERLINKS[i].href)) {
+			HYPERLINKS[i].addEventListener('mouseenter', VIDEO_MOUSE_ENTER_EVENT_LISTENER);
+			HYPERLINKS[i].addEventListener('mouseleave', VIDEO_MOUSE_LEAVE_EVENT_LISTENER);
 		}
 	};
 
-	for (i = 0; i < hyperlinks.length; i++) {
-		if (isFirst) {
-			addEvents();
-		} else if (modifiedHyperlinks.indexOf(hyperlinks[i]) === -1) {
-			addEvents();
-			modifiedHyperlinks.push(hyperlinks[i]);
+	for (i = 0; i < HYPERLINKS.length; i++) {
+		if (IS_FIRST) {
+			ADD_EVENTS();
+		} else if (modifiedHyperlinks.indexOf(HYPERLINKS[i]) === -1) {
+			ADD_EVENTS();
+			modifiedHyperlinks.push(HYPERLINKS[i]);
 		}
 	}
 
-	if (isFirst) {
-		modifiedHyperlinks = Array.from(hyperlinks);
+	if (IS_FIRST) {
+		modifiedHyperlinks = Array.from(HYPERLINKS);
 	}
 }
 
 function setFloatingAudioFromMousePosition(x, y) {
-	let heightPositionRatio = y / window.innerHeight;
-	let widthPositionRatio = x / window.innerWidth;
-	let floatingAudioHeight = parseInt(floatingAudio.style.height, 10);
-	let floatingAudioWidth = parseInt(floatingAudio.style.width, 10);
-	if (floatingAudio.clientHeight === 0 && floatingAudio.clientWidth === 0) {
-		floatingAudio.style.top = `${y - floatingAudioHeight * heightPositionRatio}px`;
-		floatingAudio.style.left = `${x - floatingAudioWidth * widthPositionRatio}px`;
+	const HEIGHT_POSITION_RATIO = y / window.innerHeight;
+	const WIDTH_POSITION_RATIO = x / window.innerWidth;
+	const FLOATING_AUDIO_HEIGHT = parseInt(FLOATING_AUDIO.style.height);
+	const FLOATING_AUDIO_WIDTH = parseInt(FLOATING_AUDIO.style.width);
+	if (FLOATING_AUDIO.clientHeight === 0 && FLOATING_AUDIO.clientWidth === 0) {
+		FLOATING_AUDIO.style.top = `${y - FLOATING_AUDIO_HEIGHT * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_AUDIO.style.left = `${x - FLOATING_AUDIO_WIDTH * WIDTH_POSITION_RATIO}px`;
 	} else {
-		floatingAudio.style.top = `${y - floatingAudio.clientHeight * heightPositionRatio}px`;
-		floatingAudio.style.left = `${x - floatingAudio.clientWidth * widthPositionRatio}px`;
+		FLOATING_AUDIO.style.top = `${y - FLOATING_AUDIO.clientHeight * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_AUDIO.style.left = `${x - FLOATING_AUDIO.clientWidth * WIDTH_POSITION_RATIO}px`;
 	}
 }
 
 function setFloatingImageFromMousePosition(x, y) {
-	let heightPositionRatio = y / window.innerHeight;
-	let widthPositionRatio = x / window.innerWidth;
-	if (floatingImage.clientHeight === 0 && floatingImage.clientWidth === 0) {
-		floatingImage.style.top = `${y - floatingImage.height * heightPositionRatio}px`;
-		floatingImage.style.left = `${x - floatingImage.width * widthPositionRatio}px`;
+	const HEIGHT_POSITION_RATIO = y / window.innerHeight;
+	const WIDTH_POSITION_RATIO = x / window.innerWidth;
+	if (FLOATING_IMAGE.clientHeight === 0 && FLOATING_IMAGE.clientWidth === 0) {
+		FLOATING_IMAGE.style.top = `${y - parseInt(FLOATING_IMAGE.style.height) * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_IMAGE.style.left = `${x - parseInt(FLOATING_IMAGE.style.width) * WIDTH_POSITION_RATIO}px`;
 	} else {
-		floatingImage.style.top = `${y - (floatingImage.clientHeight + floatingImageStyleBorderWidth * 2) * heightPositionRatio}px`;
-		floatingImage.style.left = `${x - (floatingImage.clientWidth + floatingImageStyleBorderWidth * 2) * widthPositionRatio}px`;
+		FLOATING_IMAGE.style.top = `${y - (FLOATING_IMAGE.clientHeight + floatingImageStyleBorderWidth * 2) * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_IMAGE.style.left = `${x - (FLOATING_IMAGE.clientWidth + floatingImageStyleBorderWidth * 2) * WIDTH_POSITION_RATIO}px`;
 	}
 }
 
 function setFloatingPDFFromMousePosition(x, y) {
-	let heightPositionRatio = y / window.innerHeight;
-	let widthPositionRatio = x / window.innerWidth;
-	if (floatingPDF.clientHeight === 0 && floatingPDF.clientWidth === 0) {
-		floatingPDF.style.top = `${y - floatingPDF.height * heightPositionRatio}px`;
-		floatingPDF.style.left = `${x - floatingPDF.width * widthPositionRatio}px`;
+	const HEIGHT_POSITION_RATIO = y / window.innerHeight;
+	const WIDTH_POSITION_RATIO = x / window.innerWidth;
+	if (FLOATING_PDF.clientHeight === 0 && FLOATING_PDF.clientWidth === 0) {
+		FLOATING_PDF.style.top = `${y - parseInt(FLOATING_PDF.style.height) * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_PDF.style.left = `${x - parseInt(FLOATING_PDF.style.width) * WIDTH_POSITION_RATIO}px`;
 	} else {
-		floatingPDF.style.top = `${y - (floatingPDF.clientHeight + floatingPDFStyleBorderWidth * 2) * heightPositionRatio}px`;
-		floatingPDF.style.left = `${x - (floatingPDF.clientWidth + floatingPDFStyleBorderWidth * 2) * widthPositionRatio}px`;
+		FLOATING_PDF.style.top = `${y - (FLOATING_PDF.clientHeight + floatingPDFStyleBorderWidth * 2) * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_PDF.style.left = `${x - (FLOATING_PDF.clientWidth + floatingPDFStyleBorderWidth * 2) * WIDTH_POSITION_RATIO}px`;
 	}
 }
 
 function setFloatingVideoFromMousePosition(x, y) {
-	let heightPositionRatio = y / window.innerHeight;
-	let widthPositionRatio = x / window.innerWidth;
-	if (floatingVideo.clientHeight === 0 && floatingVideo.clientWidth === 0) {
-		floatingVideo.style.top = `${y - floatingVideo.height * heightPositionRatio}px`;
-		floatingVideo.style.left = `${x - floatingVideo.width * widthPositionRatio}px`;
+	const HEIGHT_POSITION_RATIO = y / window.innerHeight;
+	const WIDTH_POSITION_RATIO = x / window.innerWidth;
+	if (FLOATING_VIDEO.clientHeight === 0 && FLOATING_VIDEO.clientWidth === 0) {
+		FLOATING_VIDEO.style.top = `${y - parseInt(FLOATING_VIDEO.style.height) * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_VIDEO.style.left = `${x - parseInt(FLOATING_VIDEO.style.width) * WIDTH_POSITION_RATIO}px`;
 	} else {
-		floatingVideo.style.top = `${y - floatingVideo.clientHeight * heightPositionRatio}px`;
-		floatingVideo.style.left = `${x - floatingVideo.clientWidth * widthPositionRatio}px`;
+		FLOATING_VIDEO.style.top = `${y - FLOATING_VIDEO.clientHeight * HEIGHT_POSITION_RATIO}px`;
+		FLOATING_VIDEO.style.left = `${x - FLOATING_VIDEO.clientWidth * WIDTH_POSITION_RATIO}px`;
 	}
 }
 
 function setFloatingAudioSize(width = 0.5) {
-	floatingAudio.style.height = `${floatingAudioDefaultHeight}px`;
-	floatingAudio.style.width = `${window.innerWidth * width}px`;
+	FLOATING_AUDIO.style.height = `${FLOATING_AUDIO_DEFAULT_HEIGHT}px`;
+	FLOATING_AUDIO.style.width = `${window.innerWidth * width}px`;
 }
 
 function setFloatingImageSize(height = 0.5, width = 0.5) {
-	let imageHeightRatio = floatingImage.naturalHeight / window.innerHeight;
-	let imageWidthRatio = floatingImage.naturalWidth / window.innerWidth;
+	const IMAGE_HEIGHT_RATIO = FLOATING_IMAGE.naturalHeight / window.innerHeight;
+	const IMAGE_WIDTH_RATIO = FLOATING_IMAGE.naturalWidth / window.innerWidth;
 
-	if (imageHeightRatio > imageWidthRatio) {
-		floatingImage.height = window.innerHeight * height;
-		floatingImage.removeAttribute('width');
+	if (IMAGE_HEIGHT_RATIO > IMAGE_WIDTH_RATIO) {
+		FLOATING_IMAGE.style.height = `${window.innerHeight * height}px`;
+		FLOATING_IMAGE.style.width = '';
 	} else {
-		floatingImage.removeAttribute('height');
-		floatingImage.width = window.innerWidth * width;
+		FLOATING_IMAGE.style.height = '';
+		FLOATING_IMAGE.style.width = `${window.innerWidth * width}px`;
 	}
 }
 
 function setFloatingPDFSize(height = 0.5, width = 0.5) {
-	floatingPDF.height = `${window.innerHeight * height}px`;
-	floatingPDF.width = `${window.innerWidth * width}px`;
+	FLOATING_PDF.style.height = `${window.innerHeight * height}px`;
+	FLOATING_PDF.style.width = `${window.innerWidth * width}px`;
 }
 
 function setFloatingVideoSize(height = 0.5, width = 0.5) {
-	let videoHeightRatio = floatingVideo.height / window.innerHeight;
-	let videoWidthRatio = floatingVideo.width / window.innerWidth;
+	const VIDEO_HEIGHT_RATIO = parseInt(FLOATING_VIDEO.style.height) / window.innerHeight;
+	const VIDEO_WIDTH_RATIO = parseInt(FLOATING_VIDEO.style.width) / window.innerWidth;
 
-	if (videoHeightRatio > videoWidthRatio) {
-		floatingVideo.height = window.innerHeight * height;
-		floatingVideo.removeAttribute('width');
+	if (VIDEO_HEIGHT_RATIO > VIDEO_WIDTH_RATIO) {
+		FLOATING_VIDEO.style.height = `${window.innerHeight * height}px`;
+		FLOATING_VIDEO.style.width = '';
 	} else {
-		floatingVideo.removeAttribute('height');
-		floatingVideo.width = window.innerWidth * width;
+		FLOATING_VIDEO.style.height = '';
+		FLOATING_VIDEO.style.width = `${window.innerWidth * width}px`;
 	}
 }
 
 function toggleFloatingImageBorderColor(state) {
 	switch (state) {
-		case contentState.loading:
+		case CONTENT_STATE.loading:
 			window.clearInterval(floatingImageIntervalID);
-			floatingImageIntervalID = window.setInterval(function () {
-				floatingImage.style.borderTopColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
-				floatingImage.style.borderRightColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
-				floatingImage.style.borderBottomColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
-				floatingImage.style.borderLeftColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
+			floatingImageIntervalID = window.setInterval(() => {
+				FLOATING_IMAGE.style.borderTopColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
+				FLOATING_IMAGE.style.borderRightColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
+				FLOATING_IMAGE.style.borderBottomColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
+				FLOATING_IMAGE.style.borderLeftColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.250)`;
 			}, 250);
 			break;
-		case contentState.loaded:
-			floatingImage.style.borderTopColor = 'rgba(0, 0, 0, 0.125)';
-			floatingImage.style.borderRightColor = 'rgba(0, 0, 0, 0.125)';
-			floatingImage.style.borderBottomColor = 'rgba(0, 0, 0, 0.125)';
-			floatingImage.style.borderLeftColor = 'rgba(0, 0, 0, 0.125)';
+		case CONTENT_STATE.loaded:
+			FLOATING_IMAGE.style.borderTopColor = 'rgba(0, 0, 0, 0.125)';
+			FLOATING_IMAGE.style.borderRightColor = 'rgba(0, 0, 0, 0.125)';
+			FLOATING_IMAGE.style.borderBottomColor = 'rgba(0, 0, 0, 0.125)';
+			FLOATING_IMAGE.style.borderLeftColor = 'rgba(0, 0, 0, 0.125)';
 			window.clearInterval(floatingImageIntervalID);
 			break;
-		case contentState.error:
-			floatingImage.style.borderTopColor = 'rgba(255, 0, 0, 0.750)';
-			floatingImage.style.borderRightColor = 'rgba(255, 0, 0, 0.750)';
-			floatingImage.style.borderBottomColor = 'rgba(255, 0, 0, 0.750)';
-			floatingImage.style.borderLeftColor = 'rgba(255, 0, 0, 0.750)';
+		case CONTENT_STATE.error:
+			FLOATING_IMAGE.style.borderTopColor = 'rgba(255, 0, 0, 0.750)';
+			FLOATING_IMAGE.style.borderRightColor = 'rgba(255, 0, 0, 0.750)';
+			FLOATING_IMAGE.style.borderBottomColor = 'rgba(255, 0, 0, 0.750)';
+			FLOATING_IMAGE.style.borderLeftColor = 'rgba(255, 0, 0, 0.750)';
 			window.clearInterval(floatingImageIntervalID);
 			break;
 	}
@@ -606,123 +591,106 @@ function toggleFloatingImageBorderColor(state) {
 
 function toggleFloatingPDFBorderColor(state) {
 	switch (state) {
-		case contentState.loading:
+		case CONTENT_STATE.loading:
 			window.clearInterval(floatingPDFIntervalID);
-			floatingPDFIntervalID = window.setInterval(function () {
-				floatingPDF.style.borderTopColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
-				floatingPDF.style.borderRightColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
-				floatingPDF.style.borderBottomColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
-				floatingPDF.style.borderLeftColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
+			floatingPDFIntervalID = window.setInterval(() => {
+				FLOATING_PDF.style.borderTopColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
+				FLOATING_PDF.style.borderRightColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
+				FLOATING_PDF.style.borderBottomColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
+				FLOATING_PDF.style.borderLeftColor = `rgba(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, 0.125)`;
 			}, 250);
 			break;
-		case contentState.loaded:
-			floatingPDF.style.borderTopColor = 'rgba(0, 0, 0, 0.125)';
-			floatingPDF.style.borderRightColor = 'rgba(0, 0, 0, 0.125)';
-			floatingPDF.style.borderBottomColor = 'rgba(0, 0, 0, 0.125)';
-			floatingPDF.style.borderLeftColor = 'rgba(0, 0, 0, 0.125)';
+		case CONTENT_STATE.loaded:
+			FLOATING_PDF.style.borderTopColor = 'rgba(0, 0, 0, 0.125)';
+			FLOATING_PDF.style.borderRightColor = 'rgba(0, 0, 0, 0.125)';
+			FLOATING_PDF.style.borderBottomColor = 'rgba(0, 0, 0, 0.125)';
+			FLOATING_PDF.style.borderLeftColor = 'rgba(0, 0, 0, 0.125)';
 			window.clearInterval(floatingPDFIntervalID);
 			break;
-		case contentState.error:
-			floatingPDF.style.borderTopColor = 'rgba(255, 0, 0, 0.750)';
-			floatingPDF.style.borderRightColor = 'rgba(255, 0, 0, 0.750)';
-			floatingPDF.style.borderBottomColor = 'rgba(255, 0, 0, 0.750)';
-			floatingPDF.style.borderLeftColor = 'rgba(255, 0, 0, 0.750)';
+		case CONTENT_STATE.error:
+			FLOATING_PDF.style.borderTopColor = 'rgba(255, 0, 0, 0.750)';
+			FLOATING_PDF.style.borderRightColor = 'rgba(255, 0, 0, 0.750)';
+			FLOATING_PDF.style.borderBottomColor = 'rgba(255, 0, 0, 0.750)';
+			FLOATING_PDF.style.borderLeftColor = 'rgba(255, 0, 0, 0.750)';
 			window.clearInterval(floatingPDFIntervalID);
 			break;
 	}
 }
 
-function readDefaultValues() {
-	return new Promise((resolve, _) => {
-		browser.runtime.sendMessage({ 'file': 'defaultValues.json' }, (message) => {
-			defaultValues = message;
-
-			resolve(true);
-		});
-	});
-}
-
-function overrideOptions() {
-	return new Promise((resolve, _) => {
-		browser.runtime.sendMessage({ 'file': 'storageKeys.json' }, (message) => {
-			storageKeys = message;
-			browser.storage.sync.get(null, (options) => {
-				let keys = Object.keys(options);
-				for (let i in keys) {
-					switch (keys[i]) {
-						case storageKeys.refreshing.enabled:
-							refreshingIsEnabled = options[keys[i]];
-							break;
-						case storageKeys.refreshing.interval:
-							refreshingInterval = options[keys[i]] * 1000;
-							break;
-						case storageKeys.audio.aspectRatio:
-							floatingAudioAspectRatio = options[keys[i]];
-							break;
-						case storageKeys.audio.autoplay:
-							floatingAudio.autoplay = options[keys[i]];
-							break;
-						case storageKeys.audio.delay:
-							floatingAudioTimeout = options[keys[i]] * 1000;
-							break;
-						case storageKeys.audio.enabled:
-							floatingAudioIsEnabled = options[keys[i]];
-							break;
-						case storageKeys.audio.loop:
-							floatingAudio.loop = options[keys[i]];
-							break;
-						case storageKeys.audio.volume:
-							floatingAudio.volume = options[keys[i]];
-							break;
-						case storageKeys.image.aspectRatio:
-							floatingImageAspectRatio = options[keys[i]];
-							break;
-						case storageKeys.image.borderWidth:
-							floatingImageStyleBorderWidth = options[keys[i]];
-							floatingImage.style.borderWidth = `${floatingImageStyleBorderWidth}px`;
-							break;
-						case storageKeys.image.delay:
-							floatingImageTimeout = options[keys[i]] * 1000;
-							break;
-						case storageKeys.image.enabled:
-							floatingImageIsEnabled = options[keys[i]];
-							break;
-						case storageKeys.pdf.aspectRatio:
-							floatingPDFAspectRatio = options[keys[i]];
-							break;
-						case storageKeys.pdf.borderWidth:
-							floatingPDFStyleBorderWidth = options[keys[i]];
-							floatingPDF.style.borderWidth = `${floatingPDFStyleBorderWidth}px`;
-							break;
-						case storageKeys.pdf.delay:
-							floatingPDFTimeout = options[keys[i]] * 1000;
-							break;
-						case storageKeys.pdf.enabled:
-							floatingPDFIsEnabled = options[keys[i]];
-							break;
-						case storageKeys.video.aspectRatio:
-							floatingVideoAspectRatio = options[keys[i]];
-							break;
-						case storageKeys.video.autoplay:
-							floatingVideo.autoplay = options[keys[i]];
-							break;
-						case storageKeys.video.delay:
-							floatingVideoTimeout = options[keys[i]] * 1000;
-							break;
-						case storageKeys.video.enabled:
-							floatingVideoIsEnabled = options[keys[i]];
-							break;
-						case storageKeys.video.loop:
-							floatingVideo.loop = options[keys[i]];
-							break;
-						case storageKeys.video.volume:
-							floatingVideo.volume = options[keys[i]];
-							break;
-					}
-				}
-
-				resolve(true);
-			});
-		});
-	});
+async function overrideOptions() {
+	storageKeys = await (await fetch(STORAGE_KEYS_JSON_PATH)).json();
+	const OPTIONS = await browser.storage.sync.get(null);
+	const KEYS = Object.keys(OPTIONS);
+	for (const i in KEYS) {
+		switch (KEYS[i]) {
+			case storageKeys.refreshing.enabled:
+				refreshingIsEnabled = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.refreshing.interval:
+				refreshingInterval = OPTIONS[KEYS[i]] * 1000;
+				break;
+			case storageKeys.audio.aspectRatio:
+				floatingAudioAspectRatio = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.audio.autoplay:
+				FLOATING_AUDIO.autoplay = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.audio.delay:
+				floatingAudioTimeout = OPTIONS[KEYS[i]] * 1000;
+				break;
+			case storageKeys.audio.enabled:
+				floatingAudioIsEnabled = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.audio.loop:
+				FLOATING_AUDIO.loop = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.audio.volume:
+				FLOATING_AUDIO.volume = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.image.aspectRatio:
+				floatingImageAspectRatio = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.image.borderWidth:
+				floatingImageStyleBorderWidth = OPTIONS[KEYS[i]];
+				FLOATING_IMAGE.style.borderWidth = `${floatingImageStyleBorderWidth}px`;
+				break;
+			case storageKeys.image.delay:
+				floatingImageTimeout = OPTIONS[KEYS[i]] * 1000;
+				break;
+			case storageKeys.image.enabled:
+				floatingImageIsEnabled = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.pdf.aspectRatio:
+				floatingPDFAspectRatio = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.pdf.borderWidth:
+				floatingPDFStyleBorderWidth = OPTIONS[KEYS[i]];
+				FLOATING_PDF.style.borderWidth = `${floatingPDFStyleBorderWidth}px`;
+				break;
+			case storageKeys.pdf.delay:
+				floatingPDFTimeout = OPTIONS[KEYS[i]] * 1000;
+				break;
+			case storageKeys.pdf.enabled:
+				floatingPDFIsEnabled = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.video.aspectRatio:
+				floatingVideoAspectRatio = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.video.autoplay:
+				FLOATING_VIDEO.autoplay = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.video.delay:
+				floatingVideoTimeout = OPTIONS[KEYS[i]] * 1000;
+				break;
+			case storageKeys.video.enabled:
+				floatingVideoIsEnabled = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.video.loop:
+				FLOATING_VIDEO.loop = OPTIONS[KEYS[i]];
+				break;
+			case storageKeys.video.volume:
+				FLOATING_VIDEO.volume = OPTIONS[KEYS[i]];
+				break;
+		}
+	}
 }

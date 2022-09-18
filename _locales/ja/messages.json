@@ -135,7 +135,7 @@
 	},
 
 	"tutorialImage1": {
-		"message": "「gif」、「gifv」、「ico」、「jpeg」、「jpg」、「png」及び「svg」形式のリンクに矢印を乗せると画像が自動的に表示されます。"
+		"message": "「bmp」、「gif」、「gifv」、「ico」、「jpeg」、「jpg」、「png」、「svg」及び「webp」形式のリンクに矢印を乗せると画像が自動的に表示されます。"
 	},
 
 	"tutorialImage2": {
