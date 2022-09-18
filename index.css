@@ -18,6 +18,7 @@ body {
 #tutorialTitleDivision {
     font-size: 64px;
     text-align: center;
+	white-space: nowrap;
 }
 
 #tutorialVideoDescriptionLabel {

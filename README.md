@@ -5,7 +5,7 @@ This extension shows contents of links. Audio, images, pdf and videos..., all of
 This extension is also available on Microsoft Edge.
 
 # Installing
-Go to [Smart Previewer](https://addons.mozilla.org/en-US/firefox/addon/smart-previewer/) and Install this extension on Firefox.
+Go to [Smart Previewer](https://addons.mozilla.org/firefox/addon/smart-previewer/) and Install this extension on Firefox.
 
 # Usage
 After installing the extension, you can check a tutorial to click the app icon in the tool bar.

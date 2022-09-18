@@ -11,12 +11,7 @@
  */
 
 body {
-	margin-left: 16px;
-	margin-right: 16px;
-}
-
-fieldset {
-	white-space: nowrap;
+	padding: 8px;
 }
 
 input {
@@ -30,7 +25,6 @@ label {
 
 #informationDivision {
 	background-color: lightskyblue;
-	margin-bottom: 16px;
 	margin-top: 16px;
 }
 

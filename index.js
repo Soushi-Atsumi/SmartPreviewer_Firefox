@@ -37,9 +37,9 @@ document.getElementById('listItem5').innerText = browser.i18n.getMessage('video'
 document.getElementById('tutorialVideo1').innerText = browser.i18n.getMessage('tutorialVideo1');
 document.getElementById('tutorialVideo2').innerText = browser.i18n.getMessage('tutorialVideo2');
 
-var tutorialVideoAnchor = document.getElementById('tutorialVideoAnchor');
-tutorialVideoAnchor.innerText = browser.i18n.getMessage('watchTheVideo');
-tutorialVideoAnchor.href = browser.i18n.getMessage('tutorialVideoHyperlink');
+const TUTORIAL_VIDEO_ANCHOR = document.getElementById('tutorialVideoAnchor');
+TUTORIAL_VIDEO_ANCHOR.innerText = browser.i18n.getMessage('watchTheVideo');
+TUTORIAL_VIDEO_ANCHOR.href = browser.i18n.getMessage('tutorialVideoHyperlink');
 document.getElementById('contentPermissionReasonDivision').innerText = browser.i18n.getMessage('contentPermissionReason');
 document.getElementById('contentPermissionReasonDescriptionDivision').innerText = browser.i18n.getMessage('contentPermissionReasonDescription');
 document.getElementById('cautionDivision1').innerText = browser.i18n.getMessage('indexHTMLCaution1');
